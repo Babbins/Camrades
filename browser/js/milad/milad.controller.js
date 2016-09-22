@@ -1,8 +1,10 @@
-app.controller("MiladControl", function($scope){
+app.controller("MiladControl", function($scope, inputFactory){
   $(function(){
 
+    $("#myVideo").css({
+        "transform": "rotateY(180deg)"
+    })
     //TESTING INTERPOLATE FUNCTION
-    var milterpolate = d3.interpolate(1,2)
 
     //GETTING COLORS TO BE TRACKED
     // var colors = new tracking.ColorTracker(['magenta', 'cyan', 'yellow']);
@@ -32,7 +34,7 @@ app.controller("MiladControl", function($scope){
         // No colors were detected in this frame.
       } else {
         event.data.forEach(function(rect) {
-            input.setX(milterpolate(rect.x))
+            input.setX(rect.x)
 
           console.log(rect.x, rect.y, rect.height, rect.width, rect.color);
         });
@@ -56,10 +58,13 @@ app.controller("MiladControl", function($scope){
 
     //3JS
         var scene = new THREE.Scene();
-        var camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.1, 1000 );
+        var camera = new THREE.PerspectiveCamera( 75, (window.innerWidth/3)/(window.innerHeight/3), 0.1, 1000 );
+
+        console.log("innerWidth",window.innerWidth/3)
+        console.log("innerHeight",window.innerHeight/3)
 
         var renderer = new THREE.WebGLRenderer();
-        renderer.setSize( window.innerWidth/2, window.innerHeight/2 );
+        renderer.setSize( window.innerWidth/3, window.innerHeight/3 );
         document.body.appendChild( renderer.domElement );
 
         var geometry = new THREE.BoxGeometry( 1, 1, 1 );
@@ -67,7 +72,7 @@ app.controller("MiladControl", function($scope){
         var cube = new THREE.Mesh( geometry, material );
         scene.add( cube );
 
-        camera.position.z = 5;
+        camera.position.z = 0;
 
         var render = function () {
             requestAnimationFrame( render );

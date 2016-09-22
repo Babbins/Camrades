@@ -28,6 +28,7 @@
     "d3": "^4.2.6",
     "eslint": "^3.4.0",
     "eslint-config-fullstack": "^1.5.0",
+    "everpolate": "0.0.3",
     "express": "^4.12.0",
     "express-session": "^1.10.3",
     "gulp": "^3.8.11",
