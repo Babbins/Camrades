@@ -1,6 +1,13 @@
 app.config(function ($stateProvider) {
     $stateProvider.state('milad', {
-        url: '/',
-        templateUrl: 'js/milad/milad.html'
+        url: '/milad',
+        templateUrl: 'js/milad/milad.html',
+        controller: 'MiladControl'
     });
 });
+
+
+/////////////////////////////////////////////
+///js
+////////////////////////////////////////////
+
