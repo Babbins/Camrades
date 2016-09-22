@@ -6,8 +6,15 @@ app.config(function ($stateProvider) {
     });
 });
 
-app.controller('aliCtrl', function(){
-  var fmOsc = new Tone.AMOscillator("Ab3", "sine").toMaster();
+app.controller('aliCtrl', function($scope){
+  var fmOsc = new Tone.Oscillator(599, 'sine').toMaster();
+  $scope.start = function(){
+    console.log('starting');
+    fmOsc.start();
+  }
+  $scope.upPitch = function(){
+    fmOsc.volume.value += 15;
+  }
   // var synth = new Tone.Synth().toMaster();
   // var osc = new Tone.OmniOscillator();
   // osc.frequency.value = "C4";
