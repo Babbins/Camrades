@@ -1,6 +1,6 @@
 app.config(function ($stateProvider) {
     $stateProvider.state('milad', {
-        url: '/',
+        url: '/milad',
         templateUrl: 'js/milad/milad.html'
     });
 });

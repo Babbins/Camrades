@@ -7,7 +7,7 @@ app.config(function ($stateProvider) {
 });
 
 app.controller('aliCtrl', function(){
-  var fmOsc = new Tone.AMOscillator("Ab3", "sine").toMaster()..detune(41).start();
+  var fmOsc = new Tone.AMOscillator("Ab3", "sine").toMaster();
   // var synth = new Tone.Synth().toMaster();
   // var osc = new Tone.OmniOscillator();
   // osc.frequency.value = "C4";
