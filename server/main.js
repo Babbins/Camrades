@@ -1,9 +1,18 @@
 'use strict';
 var chalk = require('chalk');
 var db = require('./db');
+var fs = require('fs');
+
+
+    var options = {
+        key: fs.readFileSync(__dirname + '/server.key'),
+        cert: fs.readFileSync(__dirname + '/server.crt'),
+        requestCert: false,
+        rejectUnauthorized: false
+    };
 
 // Create a node server instance! cOoL!
-var server = require('http').createServer();
+var server = require('https').createServer(options);
 
 var createApplication = function () {
     var app = require('./app')(db);

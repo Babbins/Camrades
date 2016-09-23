@@ -6,31 +6,46 @@ app.factory('inputFactory', function(){
     this.yMax = yMax;
     this.zMin = zMin;
     this.zMax = zMax;
-    this.x = null;
-    this.y = null;
-    this.z = null;
+    this.x = {};
+    this.y = {};
+    this.z = {};
+  }
+  Input.prototype.setX = function(value, type, min, max){
+    if(type) {
+      this.x.type = type;
+    }
+    if(value) {
+      this.x.value = Math.round( (value / (this.xMax - this.xMin)) * (max - min) + min );
+    }
+  }
+  Input.prototype.getX = function(){
+    return this.x;
   }
 
-  Input.prototype.setX = function(n){
-    this.x = n/(this.xMax - this.xMin);
+  Input.prototype.setY = function(value, type, min, max){
+    if(type) {
+      this.y.type = type;
+    }
+    if(value) {
+      this.y.value = Math.round( (value / (this.yMax - this.yMin)) * (max - min) + min );
+    }
   }
-  Input.prototype.getX = function(min, max){
-    return Math.round(this.x * (max - min) + min);
-  }
-  Input.prototype.setY = function(n){
-    this.y = n/(this.yMax - this.yMin);
-  }
-  Input.prototype.getY = function(min, max){
-    return Math.round(this.y * (max - min) + min);
-  }
-  Input.prototype.setZ = function(n){
-    this.z = n/(this.zMax - this.zMin);
-  }
-  Input.prototype.getZ = function(min, max){
-    return Math.round(this.z * (max - min) + min);
+  Input.prototype.getY = function(){
+    return this.y;
   }
 
+  Input.prototype.setZ = function(value, type, min, max){
+    if(type) {
+      this.z.type = type;
+    }
+    if(value) {
+      this.z.value = Math.round( (value / (this.zMax - this.zMin)) * (max - min) + min );
+    }
+  }
+  Input.prototype.getZ = function(){
+    return this.z;
+  }
   return {
     Input: Input
   }
-})
+});

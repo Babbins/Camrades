@@ -30,9 +30,26 @@ module.exports = function (db) {
 
     });
 
+
+
+
+
+
+
+    // app.get('*', function(req,res,next){
+    //     if(req.headers['x-forwarded-proto']!='https')
+    //         res.redirect('https://192.168.4.250' + req.url);
+    //     else{
+    //       next()
+    //     }
+    //
+    // })
+
     app.get('/*', function (req, res) {
         res.sendFile(app.get('indexHTMLPath'));
     });
+
+
 
     // Error catching endware.
     app.use(function (err, req, res, next) {
@@ -44,4 +61,3 @@ module.exports = function (db) {
     return app;
 
 };
-
