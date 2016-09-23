@@ -5,14 +5,17 @@ app.controller("MiladControl", function($scope, inputFactory){
         "transform": "rotateY(180deg)"
     })
 
+
+
     //TESTING INTERPOLATE FUNCTION
-    var input = new inputFactory.Input(0,300,0,300);
+    var input = new inputFactory.Input(0,300,0,300,0,300);
     //GETTING COLORS TO BE TRACKED
     // var colors = new tracking.ColorTracker(['magenta', 'cyan', 'yellow']);
     var colors = new tracking.ColorTracker(['yellow']);
 
     //ASSIGNING LISTENERS FROM COLOR TRACK
     colors.on('track', function(event) {
+
       if (event.data.length === 0) {
         // No colors were detected in this frame.
       } else {
@@ -31,7 +34,7 @@ app.controller("MiladControl", function($scope, inputFactory){
     var myCubes = document.querySelector("#myCubes");
 
     //TRACKING MY VIDEO
-    tracking.track('#myVideo', colors)
+    tracking.track('#myVideo', colors, { camera: true })
 
     //STARTING VIDEO NOW
     if (navigator.getUserMedia) {
@@ -53,6 +56,7 @@ app.controller("MiladControl", function($scope, inputFactory){
         renderer.setSize( window.innerWidth/2, window.innerHeight/2 );
         myCubes.appendChild( renderer.domElement );
 
+
         $("#myCubes canvas").css({
             "transform": "rotateY(180deg)"
         })
@@ -62,14 +66,14 @@ app.controller("MiladControl", function($scope, inputFactory){
         var cube = new THREE.Mesh( geometry, material );
         scene.add( cube );
 
-        camera.position.z = 20;
+        camera.position.z = 15;
 
         var render = function () {
             requestAnimationFrame( render );
             console.log("input of input get x", input.getX(-25,25))
-            cube.position.x = input.getX(-5,5);
-            // cube.position.y = input.getY(-50,50);
-            // cube.position.z = input.getZ(-50,50);
+            cube.position.x = input.getX(-20,20);
+            cube.position.y = -input.getY(-20,20);
+            cube.position.z = input.getZ(-20,100);
             // cube.position.y = input.getX();
 
 
