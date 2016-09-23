@@ -6,7 +6,31 @@ app.config(function ($stateProvider) {
     });
 });
 
-app.controller('aliCtrl', function($scope, inputFactory){
+
+app.controller('aliCtrl', function($scope, inputFactory, Socket, $rootScope){
+  var otherInput = {};
+  var socket = Socket;
+  socket.on('connect', function (){
+    console.log('I have made a persistent tw-way connection to teh server.')
+  });
+  $scope.$on('input', function(event, x, y, z){
+    socket.emit('input', x, y, z);
+  });
+
+  // var throttled = _.throttle(render, 1000)
+  socket.on('state', function(state){
+    console.log(state);
+    render(state);
+    // throttled(state)
+  })
+
+
+  tracking.ColorTracker.registerColor('green', function(r, g, b) {
+    if (r > 100 && g < 100 && b < 100) {
+      return true;
+    }
+    return false;
+  });
   var colors = new tracking.ColorTracker(['yellow']);
 
   //CREATING INPUT OBJECT TO SEND TO RENDER
@@ -18,9 +42,13 @@ app.controller('aliCtrl', function($scope, inputFactory){
       // No colors were detected in this frame.
     } else {
       event.data.forEach(function(rect) {
-          input.setX(rect.x);
-          input.setY(rect.y);
-         //console.log(rect.x, rect.y, rect.height, rect.width, rect.color);
+          if(input.x.type === 'frequency'){
+            input.setX(rect.x, null, 20, 1000);
+          }
+          if(input.y.type === 'volume'){
+            input.setY(rect.y, null, -50, 15);
+          }
+        $rootScope.$broadcast('input', input.getX(), input.getY(), input.z)
       });
     }
   });
@@ -40,19 +68,24 @@ app.controller('aliCtrl', function($scope, inputFactory){
       }
 
   //Tone JS
-  var fmOsc = new Tone.Oscillator('Ab3', 'sine').toMaster();
+  var osc = new Tone.Oscillator('Ab3', 'sine').toMaster();
   $scope.start = function(){
     console.log('starting');
-    fmOsc.start();
+    osc.start();
+  }
+  $scope.frequencyX = function(){
+    input.setX(null, 'frequency');
+  }
+  $scope.volumeY = function(){
+    input.setY(null, 'volume');
   }
 
-
-
-  var render = function(){
-    fmOsc.frequency.value = input.getX(20, 1000);
-    fmOsc.volume.value = input.getY(-50, 0);
-    console.log(fmOsc.frequency.value, fmOsc.volume.value);
+  var render = function(state){
+    if (state.frequency) {
+      osc.frequency.value = state.frequency;
+    }
+    if (state.volume) {
+      osc.volume.value = state.volume;
+    }
   }
-
-  setInterval(render, 5);
-})
+});
