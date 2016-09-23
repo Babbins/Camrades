@@ -1,17 +1,20 @@
 app.controller("MiladControl", function($scope, inputFactory){
   $(function(){
 
+
+    //Making video mirrored
     $("#myVideo").css({
-        "transform": "rotateY(180deg)"
+        "transform": "rotateY(180deg)",
+        "position": "fixed",
+        "right": "0",
+        "top":"0"
     })
-
-
 
     //TESTING INTERPOLATE FUNCTION
     var input = new inputFactory.Input(0,300,0,300,0,300);
     //GETTING COLORS TO BE TRACKED
     // var colors = new tracking.ColorTracker(['magenta', 'cyan', 'yellow']);
-    var colors = new tracking.ColorTracker(['yellow']);
+    var colors = new tracking.ColorTracker(['yellow', 'cyan']);
 
     //ASSIGNING LISTENERS FROM COLOR TRACK
     colors.on('track', function(event) {
@@ -44,44 +47,74 @@ app.controller("MiladControl", function($scope, inputFactory){
         function handleVideo(stream) {
             video.src = window.URL.createObjectURL(stream);
         }
+    //P5 Testing
+    //
+    var s = function( p ) {
 
-    //3JS
-        var scene = new THREE.Scene();
-        var camera = new THREE.PerspectiveCamera( 75, (window.innerWidth)/(window.innerHeight), 0.1, 1000 );
+      var x = 100;
+      var y = 100;
 
-        console.log("innerWidth",window.innerWidth)
-        console.log("innerHeight",window.innerHeight)
+      p.setup = function() {
+        p.createCanvas(700, 410);
+      };
 
-        var renderer = new THREE.WebGLRenderer();
-        renderer.setSize( window.innerWidth/2, window.innerHeight/2 );
-        myCubes.appendChild( renderer.domElement );
+      p.draw = function() {
+        p.background(input.getX(0,500));
+        p.fill(input.getX(0,500));
+        p.stroke(input.getX(0,500));
+        p.rect(input.getX(0,500),input.getY(0,500),input.getX(0,500),50);
+      };
+    };
 
+    var myp5 = new p5(s, "myContainer");
 
-        $("#myCubes canvas").css({
-            "transform": "rotateY(180deg)"
-        })
-
-        var geometry = new THREE.BoxGeometry( 1, 1, 1 );
-        var material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
-        var cube = new THREE.Mesh( geometry, material );
-        scene.add( cube );
-
-        camera.position.z = 15;
-
-        var render = function () {
-            requestAnimationFrame( render );
-            console.log("input of input get x", input.getX(-25,25))
-            cube.position.x = input.getX(-20,20);
-            cube.position.y = -input.getY(-20,20);
-            cube.position.z = input.getZ(-20,100);
-            // cube.position.y = input.getX();
-
-
-            renderer.render(scene, camera);
-        };
-
-        render();
 
     })
 
 })
+
+
+
+
+
+
+
+   //3JS
+   /*
+       var scene = new THREE.Scene();
+       var camera = new THREE.PerspectiveCamera( 75, (window.innerWidth)/(window.innerHeight), 0.1, 1000 );
+
+       console.log("innerWidth",window.innerWidth)
+       console.log("innerHeight",window.innerHeight)
+
+       var renderer = new THREE.WebGLRenderer();
+       renderer.setSize( window.innerWidth/2, window.innerHeight/2 );
+       myCubes.appendChild( renderer.domElement );
+
+
+       $("#myCubes canvas").css({
+           "transform": "rotateY(180deg)"
+       })
+
+       var geometry = new THREE.BoxGeometry( 1, 1, 1 );
+       var material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
+       var cube = new THREE.Mesh( geometry, material );
+       scene.add( cube );
+
+       camera.position.z = 15;
+
+       var render = function () {
+           requestAnimationFrame( render );
+           console.log("input of input get x", input.getX(-25,25))
+           cube.position.x = input.getX(-20,20);
+           cube.position.y = -input.getY(-20,20);
+           cube.position.z = input.getZ(-20,100);
+           // cube.position.y = input.getX();
+
+
+           renderer.render(scene, camera);
+       };
+
+       render();
+
+*/
