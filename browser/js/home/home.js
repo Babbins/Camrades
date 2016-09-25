@@ -30,7 +30,6 @@ app.controller('HomeCtrl', function($scope, inputFactory, Socket, $rootScope){
     // var throttled = _.throttle(render, 1000)
     socket.on('state', function(ztate){
       Object.assign(state,ztate);
-      console.log(state);
       render(state);
       // throttled(state)
     })
@@ -51,7 +50,7 @@ app.controller('HomeCtrl', function($scope, inputFactory, Socket, $rootScope){
     var yellow = new inputFactory.Input('yellow',0,300)
     //ASSIGNING LISTENERS FROM COLOR TRACK
     colors.on('track', function(event) {
-      context.clearRect(0, 0, canvas.width, canvas.height);
+      // context.clearRect(0, 0, canvas.width, canvas.height);
       if (event.data.length === 0) {
         // No colors were detected in this frame.
       } else {
@@ -67,20 +66,20 @@ app.controller('HomeCtrl', function($scope, inputFactory, Socket, $rootScope){
             yellow.setValue('z', rect.z);
           }
 
-          context.strokeStyle = rect.color;
-          context.strokeRect(rect.x, rect.y, rect.width, rect.height);
-          context.font = '11px Helvetica';
-          context.fillStyle = "#fff";
+          // context.strokeStyle = rect.color;
+          // context.strokeRect(rect.x, rect.y, rect.width, rect.height);
+          // context.font = '11px Helvetica';
+          // context.fillStyle = "#fff";
           socket.emit('input', Object.assign({},magenta.getProperties(),yellow.getProperties()));
         });
       }
     });
 
-    //PUTTING QUERY ON aliVideo
+    // PUTTING QUERY ON aliVideo
     var video = document.querySelector("#homeVideo");
-    var canvas = document.getElementById('canvas');
-    var context = canvas.getContext('2d');
-    //aliVideo
+    // var canvas = document.getElementById('canvas');
+    // var context = canvas.getContext('2d');
+    // aliVideo
     tracking.track('#homeVideo', colors);
 
     if (navigator.getUserMedia) {
@@ -98,6 +97,7 @@ app.controller('HomeCtrl', function($scope, inputFactory, Socket, $rootScope){
     $scope.start = function(){
       osc.start();
     }
+    $scope.buttonPressed = false;
     /*
     the register of
     [{
@@ -142,6 +142,18 @@ app.controller('HomeCtrl', function($scope, inputFactory, Socket, $rootScope){
         min: 0,
         max: 100
       },
+      {
+        label: "Position",
+        property: "position1",
+        min: 0,
+        max: 1500
+      },
+      {
+        label: "Position2",
+        property: "position2",
+        min: 0,
+        max: 100
+      }
     ]
     $scope.setControl = function(property, color, axis, min, max){
       if(color === "magenta"){
@@ -174,25 +186,85 @@ app.controller('HomeCtrl', function($scope, inputFactory, Socket, $rootScope){
 
     var s = function( p ) {
 
-      var x = 100;
-      var y = 100;
-
+      var img;
+      var bugs = [];
       p.setup = function() {
-        p.createCanvas(700, 700);
+        p.createCanvas(p.windowWidth, p.windowHeight);
+        img = p.loadImage('200_s.gif')
+        for (var i=0; i<50; i++) {
+          bugs.push(new Jitter());
+        }
+
       };
 
       p.draw = function() {
-        var bg = state.backgroundColor || 255;
-        var num = state.numOfSquares || 0;
-        console.log("num",num)
-            p.background(bg,bg,bg);
+        p.background(p.random(0,state.position2));
 
-            // p.rect(p.random(p.width, p.height), p.random(p.width, p.height), num, num);
-            p.rect(num,50,num,50);
-
+        for (var i=0; i<bugs.length; i++) {
+          bugs[i].move();
+          bugs[i].updateSpeed(state.position2);
+          bugs[i].display();
+        }
 
       };
+      function Jitter() {
+        this.x = p.random(p.width);
+        this.y = p.random(p.height);
+        this.speed = 0;
+
+        this.move = function() {
+          this.x += p.random(-this.speed, this.speed);
+          this.y += p.random(-this.speed, this.speed);
+        };
+
+        this.updateSpeed = function(newSpeed=0) {
+          this.speed = newSpeed;
+        }
+
+        this.display = function() {
+          p.image(img,this.x, this.y )
+        };
+      }
     };
+
+
+
+
+
+    // var s = function( p ) {
+
+    //   var video;
+    //   var vScale = 8;
+
+    //   p.setup = function() {
+    //     p.createCanvas(600, 600);
+    //     p.pixelDensity(1);
+    //     video = p.createCapture(p.VIDEO);
+    //     video.size(600,600);
+    //     video.size(p.width/vScale,p.height/vScale);
+    //   };
+
+    //   p.draw = function() {
+    //     p.background(40);
+    //     video.loadPixels();
+    //     p.loadPixels();
+
+    //     for (var y = 0; y < video.height; y++){
+    //       for (var x = 0; x < video.width; x++){
+    //         var index = ( x+y * video.width) * 4;
+    //         var r = video.pixels[index+0];
+    //         var g = video.pixels[index+1];
+    //         var b = video.pixels[index+2];
+    //         var bright = (r+g+b)/3;
+
+    //         p.noStroke();
+    //         p.fill(bright+20);
+    //         p.rectMode(p.CENTER);
+    //         p.rect(x*vScale, y*vScale, vScale, vScale)
+    //       }
+    //     }
+    //   };
+    // };
 
     var myp5 = new p5(s, "myContainer");
 
