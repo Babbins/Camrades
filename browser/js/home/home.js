@@ -50,7 +50,7 @@ app.controller('HomeCtrl', function($scope, inputFactory, Socket, $rootScope){
     var yellow = new inputFactory.Input('yellow',0,300)
     //ASSIGNING LISTENERS FROM COLOR TRACK
     colors.on('track', function(event) {
-      // context.clearRect(0, 0, canvas.width, canvas.height);
+      context.clearRect(0, 0, canvas.width, canvas.height);
       if (event.data.length === 0) {
         // No colors were detected in this frame.
       } else {
@@ -67,8 +67,8 @@ app.controller('HomeCtrl', function($scope, inputFactory, Socket, $rootScope){
 
           }
 
-          // context.strokeStyle = rect.color;
-          // context.strokeRect(rect.x, rect.y, rect.width, rect.height);
+          context.strokeStyle = rect.color;
+          context.strokeRect(rect.x, rect.y, rect.width, rect.height);
           // context.font = '11px Helvetica';
           // context.fillStyle = "#fff";
           socket.emit('input', Object.assign({},magenta.getProperties(),yellow.getProperties()));
@@ -78,8 +78,8 @@ app.controller('HomeCtrl', function($scope, inputFactory, Socket, $rootScope){
 
     // PUTTING QUERY ON aliVideo
     var video = document.querySelector("#homeVideo");
-    // var canvas = document.getElementById('canvas');
-    // var context = canvas.getContext('2d');
+    var canvas = document.getElementById('canvas');
+    var context = canvas.getContext('2d');
     // aliVideo
     tracking.track('#homeVideo', colors);
 
@@ -92,11 +92,68 @@ app.controller('HomeCtrl', function($scope, inputFactory, Socket, $rootScope){
         }
 
     //Tone JS
-    var player = new Tone.GrainPlayer('/signals.mp3').toMaster();
-    // player.start();
-    var osc = new Tone.Oscillator('Ab3', 'sine').toMaster();
+    var player = new Tone.Player('/signals.mp3').toMaster();
+    player.autostart = true;
+    var lfo = new Tone.LFO('4n', 400, 4000)
+
+    var osc = new Tone.OmniOscillator('Ab3', 'sine').toMaster();
+    var synth = new Tone.DuoSynth({
+      'vibratoAmount': 0.5,
+      'vibratoRate': 5,
+      'portamento': 0.1,
+      'harmonicity': 1.005,
+      'volume': 5,
+      'voice0': {
+        'volume': -2,
+        'oscillator': {'type': 'sawtooth'},
+        'filter': {
+          'Q': 1,
+          'type': 'lowpass',
+          'rolloff': -24
+        },
+        'envelope': {
+          'attack': 0.1,
+          'decay': 0.25,
+          'sustain': 0.4,
+          'release': 1.2
+        },
+        'filterEnvelope': {
+          'attack': 0.1,
+          'decay': 0.05,
+          'sustain': 0.3,
+          'release': 2,
+          'baseFrequency': 100,
+          'octaves': 4
+        }
+      },
+      'voice1': {
+        'volume': -5,
+        'oscillator': {'type': 'sawtooth'},
+        'filter': {
+          'Q': 2,
+          'type': 'bandpass',
+          'rolloff': -12
+        },
+        'envelope': {
+          'attack': 0.1,
+          'decay': 0.05,
+          'sustain': 0.7,
+          'release': 0.8
+        },
+        'filterEnvelope': {
+          'attack': 0.1,
+          'decay': 0.05,
+          'sustain': 0.7,
+          'release': 2,
+          'baseFrequency': 5000,
+          'octaves': -1.5
+        }
+      }
+    }).toMaster();
+    var synthNotes = ['c4','c#4','f4','g4','a#4']
+    var lastSynthNote = synthNotes[0];
     $scope.start = function(){
-      osc.start();
+      synth.triggerAttack(lastSynthNote);
     }
     $scope.buttonPressed = false;
     /*
@@ -128,8 +185,21 @@ app.controller('HomeCtrl', function($scope, inputFactory, Socket, $rootScope){
       {
         label: "Volume",
         property: "volume",
-        min: 0,
+        min: -35,
         max: 20
+      },
+      {
+        label: 'Vibrato Amount',
+        property: 'vibratoAmount',
+        min: 0,
+        max: 2
+
+      },
+      {
+        label: 'Set Note',
+        property: 'setNote',
+        min: 0,
+        max: synthNotes.length - 1
       },
       {
         label: "Background Color",
@@ -169,7 +239,7 @@ app.controller('HomeCtrl', function($scope, inputFactory, Socket, $rootScope){
         osc.frequency.value = state.frequency;
       }
       if (state.volume) {
-        osc.volume.value = state.volume;
+        synth.volume.value = state.volume;
       }
       if (state.detune){
         player.detune = state.detune;
@@ -180,7 +250,14 @@ app.controller('HomeCtrl', function($scope, inputFactory, Socket, $rootScope){
       if (state.drift){
         player.drift = state.drift;
       }
-    }
+      if (state.setNote){
+        console.log(Math.round(state.setNote));
+        var note = synthNotes[Math.round(state.setNote)];
+        if(note !== lastSynthNote){
+          synth.triggerAttack(note);
+        }
+        lastSynthNote = note;
+      }    }
 
 
     //P5 JS
@@ -203,6 +280,7 @@ app.controller('HomeCtrl', function($scope, inputFactory, Socket, $rootScope){
       };
 
       p.draw = function() {
+
         p.background(p.random(0,state.position2));
 
         for (var i=0; i<bugs.length; i++) {
@@ -237,47 +315,6 @@ app.controller('HomeCtrl', function($scope, inputFactory, Socket, $rootScope){
         };
       }
     };
-
-
-
-//TO GO BACK AND FORTH BETWEEN A MAX AND MIN
-
-
-
-    // var s = function( p ) {
-
-    //   var video;
-    //   var vScale = 8;
-
-    //   p.setup = function() {
-    //     p.createCanvas(600, 600);
-    //     p.pixelDensity(1);
-    //     video = p.createCapture(p.VIDEO);
-    //     video.size(600,600);
-    //     video.size(p.width/vScale,p.height/vScale);
-    //   };
-
-    //   p.draw = function() {
-    //     p.background(40);
-    //     video.loadPixels();
-    //     p.loadPixels();
-
-    //     for (var y = 0; y < video.height; y++){
-    //       for (var x = 0; x < video.width; x++){
-    //         var index = ( x+y * video.width) * 4;
-    //         var r = video.pixels[index+0];
-    //         var g = video.pixels[index+1];
-    //         var b = video.pixels[index+2];
-    //         var bright = (r+g+b)/3;
-
-    //         p.noStroke();
-    //         p.fill(bright+20);
-    //         p.rectMode(p.CENTER);
-    //         p.rect(x*vScale, y*vScale, vScale, vScale)
-    //       }
-    //     }
-    //   };
-    // };
 
     var myp5 = new p5(s, "myContainer");
 
