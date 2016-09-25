@@ -21,6 +21,41 @@ app.controller('HomeCtrl', function($scope, inputFactory, Socket, $rootScope){
         "right": "0",
         "top":"0"
     })
+    $('body').keydown(function(event){
+      socket.emit('presetChange', event.which);
+      $scope.clearControls();
+      //'1' key pressed
+      if(event.which == 49){
+        AudioFactory.preset1();
+      }
+      if(event.which == 50){
+        AudioFactory.preset2();
+      }
+      if(event.which == 51){
+        AudioFactory.preset3();
+      }
+      if(event.which == 52){
+        AudioFactory.preset4();
+      }
+      if(event.which == 53){
+        AudioFactory.preset5();
+      }
+      if(event.which == 54){
+        VideoFactory.preset6();
+      }
+      if(event.which == 55){
+        VideoFactory.preset7();
+      }
+      if(event.which == 56){
+        VideoFactory.preset8();
+      }
+      if(event.which == 57){
+        VideoFactory.preset9();
+      }
+      if(event.which == 48){
+        VideoFactory.preset0();
+      }
+    });
 
     var socket = Socket;
     socket.on('connect', function (){
@@ -91,73 +126,9 @@ app.controller('HomeCtrl', function($scope, inputFactory, Socket, $rootScope){
             video.src = window.URL.createObjectURL(stream);
         }
 
-    //Tone JS
-    var player = new Tone.Player('/signals.mp3').toMaster();
-    player.autostart = true;
-    var lfo = new Tone.LFO('4n', 400, 4000)
-
-    var osc = new Tone.OmniOscillator('Ab3', 'sine').toMaster();
-    var synth = new Tone.DuoSynth({
-      'vibratoAmount': 0.5,
-      'vibratoRate': 5,
-      'portamento': 0.1,
-      'harmonicity': 1.005,
-      'volume': 5,
-      'voice0': {
-        'volume': -2,
-        'oscillator': {'type': 'sawtooth'},
-        'filter': {
-          'Q': 1,
-          'type': 'lowpass',
-          'rolloff': -24
-        },
-        'envelope': {
-          'attack': 0.1,
-          'decay': 0.25,
-          'sustain': 0.4,
-          'release': 1.2
-        },
-        'filterEnvelope': {
-          'attack': 0.1,
-          'decay': 0.05,
-          'sustain': 0.3,
-          'release': 2,
-          'baseFrequency': 100,
-          'octaves': 4
-        }
-      },
-      'voice1': {
-        'volume': -5,
-        'oscillator': {'type': 'sawtooth'},
-        'filter': {
-          'Q': 2,
-          'type': 'bandpass',
-          'rolloff': -12
-        },
-        'envelope': {
-          'attack': 0.1,
-          'decay': 0.05,
-          'sustain': 0.7,
-          'release': 0.8
-        },
-        'filterEnvelope': {
-          'attack': 0.1,
-          'decay': 0.05,
-          'sustain': 0.7,
-          'release': 2,
-          'baseFrequency': 5000,
-          'octaves': -1.5
-        }
-      }
-    }).toMaster();
-    var synthNotes = ['c4','c#4','f4','g4','a#4']
-    var lastSynthNote = synthNotes[0];
-    $scope.start = function(){
-      synth.triggerAttack(lastSynthNote);
-    }
     $scope.clearControls = function(){
       yellow.clearControls();
-      green.clearControls();
+      magenta.clearControls();
     }
     $scope.buttonPressed = false;
     /*
@@ -203,7 +174,7 @@ app.controller('HomeCtrl', function($scope, inputFactory, Socket, $rootScope){
         label: 'Set Note',
         property: 'setNote',
         min: 0,
-        max: synthNotes.length - 1
+        // max: synthNotes.length - 1
       },
       {
         label: "Background Color",
@@ -266,75 +237,75 @@ app.controller('HomeCtrl', function($scope, inputFactory, Socket, $rootScope){
 
     //P5 JS
 
-    var s = function( p ) {
-
-      var img = [];
-      var bugs = [];
-      var asc = true;
-      var counter = 0;
-      p.setup = function() {
-        p.createCanvas(p.windowWidth, p.windowHeight);
-        for (var x = 1; x < 7; x++){
-           img.push(p.loadImage("/img/0"+ x +'.png'))
-        }
-
-        for (var i=0; i<50; i++) {
-          bugs.push(new Jitter());
-        }
-
-      };
-
-      p.draw = function() {
-
-        p.background(p.random(0,state.position2));
-
-        for (var i=0; i<bugs.length; i++) {
-          bugs[i].move();
-          bugs[i].updateSpeed(state.position2);
-          bugs[i].display();
-        }
-
-      };
-      function Jitter() {
-        this.x = p.random(p.width);
-        this.y = p.random(p.height);
-        this.speed = 0;
-
-        this.move = function() {
-          this.x += p.random(-this.speed, this.speed);
-          this.y += p.random(-this.speed, this.speed);
-        };
-
-        this.updateSpeed = function(newSpeed=1) {
-          this.speed = newSpeed;
-        }
-
-        this.display = function() {
-
-             console.log("counter",counter)
-            if(asc){
-              counter++;
-              if(counter === 6){
-                asc = false;
-              }
-            }
-            else{
-              counter--;
-              if (counter === 1){
-                asc = true;
-              }
-            }
-
-
-          // if ( counter > 6 || counter < 0) {
-          //   counter = counter * -1;
-          // }
-          // counter = counter + counter
-          p.image(img[counter],this.x, this.y )
-        };
-      }
-    }
-    var myp5 = new p5(s, "myContainer");
+    // var s = function( p ) {
+    //
+    //   var img = [];
+    //   var bugs = [];
+    //   var asc = true;
+    //   var counter = 0;
+    //   p.setup = function() {
+    //     p.createCanvas(p.windowWidth, p.windowHeight);
+    //     for (var x = 1; x < 7; x++){
+    //        img.push(p.loadImage("/img/0"+ x +'.png'))
+    //     }
+    //
+    //     for (var i=0; i<50; i++) {
+    //       bugs.push(new Jitter());
+    //     }
+    //
+    //   };
+    //
+    //   p.draw = function() {
+    //
+    //     p.background(p.random(0,state.position2));
+    //
+    //     for (var i=0; i<bugs.length; i++) {
+    //       bugs[i].move();
+    //       bugs[i].updateSpeed(state.position2);
+    //       bugs[i].display();
+    //     }
+    //
+    //   };
+    //   function Jitter() {
+    //     this.x = p.random(p.width);
+    //     this.y = p.random(p.height);
+    //     this.speed = 0;
+    //
+    //     this.move = function() {
+    //       this.x += p.random(-this.speed, this.speed);
+    //       this.y += p.random(-this.speed, this.speed);
+    //     };
+    //
+    //     this.updateSpeed = function(newSpeed=1) {
+    //       this.speed = newSpeed;
+    //     }
+    //
+    //     this.display = function() {
+    //
+    //          console.log("counter",counter)
+    //         if(asc){
+    //           counter++;
+    //           if(counter === 6){
+    //             asc = false;
+    //           }
+    //         }
+    //         else{
+    //           counter--;
+    //           if (counter === 1){
+    //             asc = true;
+    //           }
+    //         }
+    //
+    //
+    //       // if ( counter > 6 || counter < 0) {
+    //       //   counter = counter * -1;
+    //       // }
+    //       // counter = counter + counter
+    //       p.image(img[counter],this.x, this.y )
+    //     };
+    //   }
+    // }
+    // var myp5 = new p5(s, "myContainer");
 
   });
 });
