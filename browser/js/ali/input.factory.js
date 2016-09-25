@@ -11,6 +11,12 @@ app.factory('inputFactory', function(){
   Input.prototype.addControl = function (axis, property, min, max){
       this[axis].controls.push({property: property, min: min, max: max});
   }
+  Input.prototype.clearControls = function(){
+    let axes = ['x', 'y', 'z'];
+    axes.forEach(axis => {
+      this[axis].controls = [];
+    });
+  }
   Input.prototype.setValue = function(axis, value){
     this[axis].value = value / (this.max - this.min);
   }

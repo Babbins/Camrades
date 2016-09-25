@@ -155,6 +155,10 @@ app.controller('HomeCtrl', function($scope, inputFactory, Socket, $rootScope){
     $scope.start = function(){
       synth.triggerAttack(lastSynthNote);
     }
+    $scope.clearControls = function(){
+      yellow.clearControls();
+      green.clearControls();
+    }
     $scope.buttonPressed = false;
     /*
     the register of
