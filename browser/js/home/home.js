@@ -266,6 +266,7 @@ app.controller('HomeCtrl', function($scope, inputFactory, Socket, $rootScope){
 
       var img = [];
       var bugs = [];
+      var asc = true;
       var counter = 0;
       p.setup = function() {
         p.createCanvas(p.windowWidth, p.windowHeight);
@@ -306,17 +307,30 @@ app.controller('HomeCtrl', function($scope, inputFactory, Socket, $rootScope){
 
         this.display = function() {
 
+             console.log("counter",counter)
+            if(asc){
+              counter++;
+              if(counter === 6){
+                asc = false;
+              }
+            }
+            else{
+              counter--;
+              if (counter === 1){
+                asc = true;
+              }
+            }
+
 
           // if ( counter > 6 || counter < 0) {
           //   counter = counter * -1;
           // }
           // counter = counter + counter
-          p.image(img[1],this.x, this.y )
+          p.image(img[counter],this.x, this.y )
         };
       }
-    };
-
+    }
     var myp5 = new p5(s, "myContainer");
 
-  })
+  });
 });
