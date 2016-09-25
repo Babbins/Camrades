@@ -69,7 +69,6 @@ app.controller('HomeCtrl', function($scope, inputFactory, Socket, $rootScope){
 
           context.strokeStyle = rect.color;
           context.strokeRect(rect.x, rect.y, rect.width, rect.height);
-          context.font = '11px Helvetica';
           context.fillStyle = "#fff";
           socket.emit('input', Object.assign({},magenta.getProperties(),yellow.getProperties()));
         });
@@ -92,11 +91,68 @@ app.controller('HomeCtrl', function($scope, inputFactory, Socket, $rootScope){
         }
 
     //Tone JS
-    var player = new Tone.GrainPlayer('/signals.mp3').toMaster();
-    // player.start();
-    var osc = new Tone.Oscillator('Ab3', 'sine').toMaster();
+    var player = new Tone.Player('/signals.mp3').toMaster();
+    player.autostart = true;
+    var lfo = new Tone.LFO('4n', 400, 4000)
+
+    var osc = new Tone.OmniOscillator('Ab3', 'sine').toMaster();
+    var synth = new Tone.DuoSynth({
+      'vibratoAmount': 0.5,
+      'vibratoRate': 5,
+      'portamento': 0.1,
+      'harmonicity': 1.005,
+      'volume': 5,
+      'voice0': {
+        'volume': -2,
+        'oscillator': {'type': 'sawtooth'},
+        'filter': {
+          'Q': 1,
+          'type': 'lowpass',
+          'rolloff': -24
+        },
+        'envelope': {
+          'attack': 0.1,
+          'decay': 0.25,
+          'sustain': 0.4,
+          'release': 1.2
+        },
+        'filterEnvelope': {
+          'attack': 0.1,
+          'decay': 0.05,
+          'sustain': 0.3,
+          'release': 2,
+          'baseFrequency': 100,
+          'octaves': 4
+        }
+      },
+      'voice1': {
+        'volume': -5,
+        'oscillator': {'type': 'sawtooth'},
+        'filter': {
+          'Q': 2,
+          'type': 'bandpass',
+          'rolloff': -12
+        },
+        'envelope': {
+          'attack': 0.1,
+          'decay': 0.05,
+          'sustain': 0.7,
+          'release': 0.8
+        },
+        'filterEnvelope': {
+          'attack': 0.1,
+          'decay': 0.05,
+          'sustain': 0.7,
+          'release': 2,
+          'baseFrequency': 5000,
+          'octaves': -1.5
+        }
+      }
+    }).toMaster();
+    var synthNotes = ['c4','c#4','f4','g4','a#4']
+    var lastSynthNote = synthNotes[0];
     $scope.start = function(){
-      osc.start();
+      synth.triggerAttack(lastSynthNote);
     }
     /*
     the register of
@@ -127,8 +183,21 @@ app.controller('HomeCtrl', function($scope, inputFactory, Socket, $rootScope){
       {
         label: "Volume",
         property: "volume",
-        min: 0,
+        min: -35,
         max: 20
+      },
+      {
+        label: 'Vibrato Amount',
+        property: 'vibratoAmount',
+        min: 0,
+        max: 2
+
+      },
+      {
+        label: 'Set Note',
+        property: 'setNote',
+        min: 0,
+        max: synthNotes.length - 1
       },
       {
         label: "Background Color",
@@ -156,7 +225,7 @@ app.controller('HomeCtrl', function($scope, inputFactory, Socket, $rootScope){
         osc.frequency.value = state.frequency;
       }
       if (state.volume) {
-        osc.volume.value = state.volume;
+        synth.volume.value = state.volume;
       }
       if (state.detune){
         player.detune = state.detune;
@@ -167,6 +236,15 @@ app.controller('HomeCtrl', function($scope, inputFactory, Socket, $rootScope){
       if (state.drift){
         player.drift = state.drift;
       }
+      if (state.setNote){
+        console.log(Math.round(state.setNote));
+        var note = synthNotes[Math.round(state.setNote)];
+        if(note !== lastSynthNote){
+          synth.triggerAttack(note);
+        }
+        lastSynthNote = note;
+      }
+      // synth.triggerAttack(lastSynthNote);
     }
 
 
@@ -184,7 +262,7 @@ app.controller('HomeCtrl', function($scope, inputFactory, Socket, $rootScope){
       p.draw = function() {
         var bg = state.backgroundColor || 255;
         var num = state.numOfSquares || 0;
-        console.log("num",num)
+        // console.log("num",num)
             p.background(bg,bg,bg);
 
             // p.rect(p.random(p.width, p.height), p.random(p.width, p.height), num, num);
