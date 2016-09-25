@@ -1,6 +1,5 @@
 'use strict';
 var socketio = require('socket.io');
-var stateFuncs = require('./state');
 var io = null;
 
 module.exports = function (server) {
@@ -15,10 +14,7 @@ module.exports = function (server) {
         console.log('Client ID: ' + socket.id + ' has disconnected');
       })
 
-      socket.on('input', function(x, y, z){
-        // console.log(x,y,z);
-        var state = stateFuncs.makeState(x, y, z);
-        console.log(state);
+      socket.on('input', function(state){
         io.emit('state', state);
       })
 
