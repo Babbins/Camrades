@@ -1,49 +1,33 @@
 app.factory('inputFactory', function(){
-  var Input = function(xMin,xMax,yMin,yMax,zMin,zMax){
-    this.xMin = xMin;
-    this.xMax = xMax;
-    this.yMin = yMin;
-    this.yMax = yMax;
-    this.zMin = zMin;
-    this.zMax = zMax;
-    this.x = {};
-    this.y = {};
-    this.z = {};
-  }
-  Input.prototype.setX = function(value, type, min, max){
-    if(type) {
-      this.x.type = type;
-    }
-    if(value) {
-      this.x.value = Math.round( (value / (this.xMax - this.xMin)) * (max - min) + min );
-    }
-  }
-  Input.prototype.getX = function(){
-    return this.x;
-  }
+  var Input = function(color, min, max){
+    this.min = min;
+    this.max = max;
+    this.color = color;
 
-  Input.prototype.setY = function(value, type, min, max){
-    if(type) {
-      this.y.type = type;
-    }
-    if(value) {
-      this.y.value = Math.round( (value / (this.yMax - this.yMin)) * (max - min) + min );
-    }
+    this.x = {controls: [], value: 0};
+    this.y = {controls: [], value: 0};
+    this.z = {controls: [], value: 0};
   }
-  Input.prototype.getY = function(){
-    return this.y;
+  Input.prototype.addControl = function (axis, property, min, max){
+      this[axis].controls.push({property: property, min: min, max: max});
   }
+  Input.prototype.setValue = function(axis, value){
+    this[axis].value = value / (this.max - this.min);
+  }
+  Input.prototype.getProperties = function(){
+    let properties = {};
+    this.x.controls.forEach(control => {
+      properties[control.property] = this.x.value * (control.max - control.min) + control.min;
+    });
+    this.y.controls.forEach(control => {
+      properties[control.property] = this.y.value * (control.max - control.min) + control.min;
 
-  Input.prototype.setZ = function(value, type, min, max){
-    if(type) {
-      this.z.type = type;
-    }
-    if(value) {
-      this.z.value = Math.round( (value / (this.zMax - this.zMin)) * (max - min) + min );
-    }
-  }
-  Input.prototype.getZ = function(){
-    return this.z;
+    });
+    this.z.controls.forEach(control => {
+      properties[control.property] = this.z.value * (control.max - control.min) + control.min;
+
+    });
+    return properties;
   }
   return {
     Input: Input

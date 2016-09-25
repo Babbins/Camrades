@@ -8,7 +8,6 @@ app.config(function ($stateProvider) {
 
 
 app.controller('aliCtrl', function($scope, inputFactory, Socket, $rootScope){
-  var otherInput = {};
   var socket = Socket;
   socket.on('connect', function (){
     console.log('I have made a persistent tw-way connection to teh server.')
