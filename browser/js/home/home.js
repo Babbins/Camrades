@@ -58,12 +58,13 @@ app.controller('HomeCtrl', function($scope, inputFactory, Socket, $rootScope){
           if(rect.color === 'magenta'){
             magenta.setValue('x', rect.x);
             magenta.setValue('y', rect.y);
-            magenta.setValue('z', rect.z);
+            magenta.setValue('z', rect.width);
           }
           if(rect.color === 'yellow'){
             yellow.setValue('x', rect.x);
             yellow.setValue('y', rect.y);
-            yellow.setValue('z', rect.z);
+            yellow.setValue('z', rect.width);
+
           }
 
           // context.strokeStyle = rect.color;
@@ -186,11 +187,15 @@ app.controller('HomeCtrl', function($scope, inputFactory, Socket, $rootScope){
 
     var s = function( p ) {
 
-      var img;
+      var img = [];
       var bugs = [];
+      var counter = 0;
       p.setup = function() {
         p.createCanvas(p.windowWidth, p.windowHeight);
-        img = p.loadImage('200_s.gif')
+        for (var x = 1; x < 7; x++){
+           img.push(p.loadImage("/img/0"+ x +'.png'))
+        }
+
         for (var i=0; i<50; i++) {
           bugs.push(new Jitter());
         }
@@ -217,17 +222,25 @@ app.controller('HomeCtrl', function($scope, inputFactory, Socket, $rootScope){
           this.y += p.random(-this.speed, this.speed);
         };
 
-        this.updateSpeed = function(newSpeed=0) {
+        this.updateSpeed = function(newSpeed=1) {
           this.speed = newSpeed;
         }
 
         this.display = function() {
-          p.image(img,this.x, this.y )
+
+
+          // if ( counter > 6 || counter < 0) {
+          //   counter = counter * -1;
+          // }
+          // counter = counter + counter
+          p.image(img[1],this.x, this.y )
         };
       }
     };
 
 
+
+//TO GO BACK AND FORTH BETWEEN A MAX AND MIN
 
 
 
