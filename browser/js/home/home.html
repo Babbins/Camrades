@@ -1,24 +1,27 @@
-<h1>MILALIIII</h1>
+<video id="homeVideo" style='transform: rotateY(180deg); position: fixed; right: 0; top:0; z-index: 900' width="300" height="300" preload autoplay loop muted></video>
+<canvas id="canvas" style='transform: rotateY(180deg); position: fixed; right: 0; top:0; z-index: 901' width="300" height="300" preload autoplay loop muted></canvas>
 
-<video id="homeVideo" style='transform: rotateY(180deg); position: fixed; right: 0; top:0' width="300" height="300" preload autoplay loop muted></video>
-<canvas id="canvas" style='transform: rotateY(180deg); position: fixed; right: 0; top:0' width="300" height="300d" preload autoplay loop muted></canvas>
-
-<div id="myContainer"></div>
+<div id="myContainer" style="position:fixed; top:0; bottom:0;left:0;right:0"></div>
 
 <button ng-click="start()"  >START</button>
 
-<h3>audio</h3
-<div>
-  <div class="row">
-    <div class="col-xs-3" ng-repeat="control in controls">
-      <button style="width:50%" ng-click="showOptions(control)">{{control.label}}</button>
+
+  <div style="position:fixed;top:0;left:0">
+
+  <div>
+    <div>
+      <button style="background-color:grey;border:none" ng-click="buttonPressed=!buttonPressed" type="button" class="btn btn-default btn-lg">
+        <span class="glyphicon glyphicon-option-vertical" aria-hidden="true"></span>
+      </button>
     </div>
   </div>
-  <div class="row">
-    <div class="col-xs-3 col-xs-offset-3">
+    <div ng-hide="buttonPressed===false"  class="options" >
+      <div ng-repeat="control in controls">
+        <button class="btn btn-success" style="width:200px;padding:5px; margin:5px;" ng-click="showOptions(control)">{{control.label}}</button>
+      </div>
       <div ng-if="currentSetButton">
         <div style="margin-left:auto; margin-right:auto; background-color:yellow">
-          <h3>Set Options for {{currentSetButton.label}}</h3>
+          <h3>{{currentSetButton.label}}</h3>
           <div class="btn-group pull-left" >
             <label class="btn btn-primary" ng-model="buttonOptions.color" uib-btn-radio="'yellow'">Yellow</label>
             <label class="btn btn-primary" ng-model="buttonOptions.color" uib-btn-radio="'magenta'">Magenta</label>
@@ -36,33 +39,4 @@
         </div>
       </div>
     </div>
-
-        <!-- <div uib-carousel active="axisActive">
-          <div uib-slide index="0" style="padding:10px">
-            X
-          </div uib-slide>
-          <div uib-slide index="1" style="padding:10px">
-            Y
-          </div uib-slide>
-          <div uib-slide index="2" style="padding:10px">
-            Z
-          </div uib-slide>
-        </div> -->
-
-
   </div>
-</div>
-<!-- <button ng-click="frequencyX()">Frequency Control X</button>
-
-<button ng-click="volumeY()">Volume Control Y</button>
-
-<h3>video</h3>
-<button ng-click="ellipseX()">Ellipse Control X</button>
-
-<button ng-click="ellipseY()">Ellipse Control Y</button>
-
-<button ng-click="width()">width</button>
-
-<button ng-click="detune()">detune</button>
-<button ng-click="playbackRate()">playbackRate</button>
-<button ng-click="drift()">drfift</button> -->

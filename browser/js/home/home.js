@@ -30,7 +30,6 @@ app.controller('HomeCtrl', function($scope, inputFactory, Socket, $rootScope){
     // var throttled = _.throttle(render, 1000)
     socket.on('state', function(ztate){
       Object.assign(state,ztate);
-      console.log(state);
       render(state);
       // throttled(state)
     })
@@ -69,17 +68,18 @@ app.controller('HomeCtrl', function($scope, inputFactory, Socket, $rootScope){
 
           context.strokeStyle = rect.color;
           context.strokeRect(rect.x, rect.y, rect.width, rect.height);
-          context.fillStyle = "#fff";
+          // context.font = '11px Helvetica';
+          // context.fillStyle = "#fff";
           socket.emit('input', Object.assign({},magenta.getProperties(),yellow.getProperties()));
         });
       }
     });
 
-    //PUTTING QUERY ON aliVideo
+    // PUTTING QUERY ON aliVideo
     var video = document.querySelector("#homeVideo");
     var canvas = document.getElementById('canvas');
     var context = canvas.getContext('2d');
-    //aliVideo
+    // aliVideo
     tracking.track('#homeVideo', colors);
 
     if (navigator.getUserMedia) {
@@ -154,6 +154,7 @@ app.controller('HomeCtrl', function($scope, inputFactory, Socket, $rootScope){
     $scope.start = function(){
       synth.triggerAttack(lastSynthNote);
     }
+    $scope.buttonPressed = false;
     /*
     the register of
     [{
@@ -211,6 +212,18 @@ app.controller('HomeCtrl', function($scope, inputFactory, Socket, $rootScope){
         min: 0,
         max: 100
       },
+      {
+        label: "Position",
+        property: "position1",
+        min: 0,
+        max: 1500
+      },
+      {
+        label: "Position2",
+        property: "position2",
+        min: 0,
+        max: 100
+      }
     ]
     $scope.setControl = function(property, color, axis, min, max){
       if(color === "magenta"){
@@ -243,34 +256,55 @@ app.controller('HomeCtrl', function($scope, inputFactory, Socket, $rootScope){
           synth.triggerAttack(note);
         }
         lastSynthNote = note;
-      }
-      // synth.triggerAttack(lastSynthNote);
-    }
+      }    }
 
 
     //P5 JS
 
     var s = function( p ) {
 
-      var x = 100;
-      var y = 100;
-
+      var img;
+      var bugs = [];
       p.setup = function() {
-        p.createCanvas(700, 700);
+        p.createCanvas(p.windowWidth, p.windowHeight);
+        img = p.loadImage('200_s.gif')
+        for (var i=0; i<50; i++) {
+          bugs.push(new Jitter());
+        }
+
       };
 
       p.draw = function() {
-        var bg = state.backgroundColor || 255;
-        var num = state.numOfSquares || 0;
-        // console.log("num",num)
-            p.background(bg,bg,bg);
 
-            // p.rect(p.random(p.width, p.height), p.random(p.width, p.height), num, num);
-            p.rect(num,50,num,50);
+        p.background(p.random(0,state.position2));
 
+        for (var i=0; i<bugs.length; i++) {
+          bugs[i].move();
+          bugs[i].updateSpeed(state.position2);
+          bugs[i].display();
+        }
 
       };
+      function Jitter() {
+        this.x = p.random(p.width);
+        this.y = p.random(p.height);
+        this.speed = 0;
+
+        this.move = function() {
+          this.x += p.random(-this.speed, this.speed);
+          this.y += p.random(-this.speed, this.speed);
+        };
+
+        this.updateSpeed = function(newSpeed=0) {
+          this.speed = newSpeed;
+        }
+
+        this.display = function() {
+          p.image(img,this.x, this.y )
+        };
+      }
     };
+
 
     var myp5 = new p5(s, "myContainer");
 
