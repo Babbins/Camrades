@@ -1,4 +1,4 @@
-app.config(function($stateProvider) {
+app.config(function ($stateProvider) {
     $stateProvider.state('home', {
         url: '/',
         templateUrl: 'js/home/home.html',
@@ -6,280 +6,166 @@ app.config(function($stateProvider) {
     });
 });
 
-app.controller('HomeCtrl', function($scope, inputFactory, Socket, $rootScope) {
-    var state = {};
-    $(function() {
-        $("#homeVideo").css({
-            "transform": "rotateY(180deg)",
-            "position": "fixed",
-            "right": "0",
-            "top": "0"
-        })
-        $("#myContainer canvas").css({
-            "transform": "rotateY(180deg)",
-            "position": "fixed",
-            "right": "0",
-            "top": "0"
-        })
 
-        var socket = Socket;
-        socket.on('connect', function() {
-            console.log('I have made a persistent tw-way connection to teh server.')
-        });
+// app.controller('HomeCtrl', function($scope, , stateFactory, playAlong, inputFactory, Socket, $rootScope){
+app.controller('HomeCtrl', function($scope, stateFactory,videoControlFactory, grainPlayer, playAlong, inputFactory, Socket, $rootScope){
 
-        // var throttled = _.throttle(render, 1000)
-        socket.on('state', function(ztate) {
-            Object.assign(state, ztate);
-            render(state);
-            // console.log(state)
-                // throttled(state)
-        })
-
-
-        // tracking.ColorTracker.registerColor('yellow', function(r, g, b) {
-        //   if (r > 225 && g > 125 && b < 70) {
-        //     return true;
-        //   }
-        //   return false;
-        // });
-
-        var colors = new tracking.ColorTracker(['magenta', 'yellow']);
-        colors.minDimension = 10;
-
-        //CREATING INPUT OBJECT TO SEND TO RENDER
-        var magenta = new inputFactory.Input('magenta', 0, 300);
-        var yellow = new inputFactory.Input('yellow', 0, 300)
-            //ASSIGNING LISTENERS FROM COLOR TRACK
-        colors.on('track', function(event) {
-            context.clearRect(0, 0, canvas.width, canvas.height);
-            if (event.data.length === 0) {
-                // No colors were detected in this frame.
-            } else {
-                event.data.forEach(function(rect) {
-                    if (rect.color === 'magenta') {
-                        magenta.setValue('x', rect.x);
-                        magenta.setValue('y', rect.y);
-                        magenta.setValue('z', rect.width);
-                    }
-                    if (rect.color === 'yellow') {
-                        yellow.setValue('x', rect.x);
-                        yellow.setValue('y', rect.y);
-                        yellow.setValue('z', rect.width);
-
-                    }
-
-                    context.strokeStyle = rect.color;
-                    context.strokeRect(rect.x, rect.y, rect.width, rect.height);
-                    // context.font = '11px Helvetica';
-                    // context.fillStyle = "#fff";
-                    socket.emit('input', Object.assign({}, magenta.getProperties(), yellow.getProperties()));
-                });
-            }
-        });
-
-        // PUTTING QUERY ON aliVideo
-        var video = document.querySelector("#homeVideo");
-        var canvas = document.getElementById('canvas');
-        var context = canvas.getContext('2d');
-        // aliVideo
-        tracking.track('#homeVideo', colors);
-
-        if (navigator.getUserMedia) {
-            navigator.getUserMedia({ video: true }, handleVideo, function() {});
+  var audioPreset, videoPreset;
+  var presetMap = {
+    1: playAlong,
+    2: grainPlayer,
+    6: "recursiveCircle",
+    7: "davidFaces"
+  }
+  var state = {};
+  $scope.state = state
+  $(function(){
+    $("#homeVideo").css({
+        "transform": "rotateY(180deg)",
+        "position": "fixed",
+        "right": "0",
+        "top":"0"
+    })
+    $("#myContainer canvas").css({
+        "transform": "rotateY(180deg)",
+        "position": "fixed",
+        "right": "0",
+        "top":"0"
+    })
+    $('body').keydown(function(event){
+      if(event.which > 47 && event.which < 58){
+        $scope.clearControls();
+        if(event.which < 54 && event.which > 48){
+          socket.emit('presetAudio', event.which);
         }
-
-        function handleVideo(stream) {
-            video.src = window.URL.createObjectURL(stream);
+        else{
+          socket.emit('presetVideo', event.which);
         }
-
-        //Tone JS
-        var player = new Tone.Player('/signals.mp3').toMaster();
-        player.autostart = true;
-        var lfo = new Tone.LFO('4n', 400, 4000)
-
-        var osc = new Tone.OmniOscillator('Ab3', 'sine').toMaster();
-        var synth = new Tone.DuoSynth({
-            'vibratoAmount': 0.5,
-            'vibratoRate': 5,
-            'portamento': 0.1,
-            'harmonicity': 1.005,
-            'volume': 5,
-            'voice0': {
-                'volume': -2,
-                'oscillator': { 'type': 'sawtooth' },
-                'filter': {
-                    'Q': 1,
-                    'type': 'lowpass',
-                    'rolloff': -24
-                },
-                'envelope': {
-                    'attack': 0.1,
-                    'decay': 0.25,
-                    'sustain': 0.4,
-                    'release': 1.2
-                },
-                'filterEnvelope': {
-                    'attack': 0.1,
-                    'decay': 0.05,
-                    'sustain': 0.3,
-                    'release': 2,
-                    'baseFrequency': 100,
-                    'octaves': 4
-                }
-            },
-            'voice1': {
-                'volume': -5,
-                'oscillator': { 'type': 'sawtooth' },
-                'filter': {
-                    'Q': 2,
-                    'type': 'bandpass',
-                    'rolloff': -12
-                },
-                'envelope': {
-                    'attack': 0.1,
-                    'decay': 0.05,
-                    'sustain': 0.7,
-                    'release': 0.8
-                },
-                'filterEnvelope': {
-                    'attack': 0.1,
-                    'decay': 0.05,
-                    'sustain': 0.7,
-                    'release': 2,
-                    'baseFrequency': 5000,
-                    'octaves': -1.5
-                }
-            }
-        }).toMaster();
-        var synthNotes = ['c4', 'c#4', 'f4', 'g4', 'a#4']
-        var lastSynthNote = synthNotes[0];
-        $scope.start = function() {
-            synth.triggerAttack(lastSynthNote);
-        }
-        $scope.clearControls = function() {
-            yellow.clearControls();
-            green.clearControls();
-        }
-        $scope.buttonPressed = false;
-        /*
-        the register of
-        [{
-          label:
-          property:
-          min:
-          max:
-        }]
-        */
-        $scope.currentSetButton = null;
-        $scope.colorActive = 0;
-        $scope.axisActive = 0;
-        $scope.buttonOptions = {
-            color: ["magenta", "yellow"][$scope.colorActive],
-            axis: ["x", "y", "z"][$scope.axisActive]
-        }
-        $scope.showOptions = function(control) {
-            $scope.currentSetButton = control;
-        }
-        $scope.controls = [{
-                label: "Frequency",
-                property: "frequency",
-                min: 0,
-                max: 2000
-            }, {
-                label: "Volume",
-                property: "volume",
-                min: -35,
-                max: 20
-            }, {
-                label: 'Vibrato Amount',
-                property: 'vibratoAmount',
-                min: 0,
-                max: 2
-
-            }, {
-                label: 'Set Note',
-                property: 'setNote',
-                min: 0,
-                max: synthNotes.length - 1
-
-            }, {
-                label: 'levels',
-                property: 'levels',
-                min: 0,
-                max: 10
-
-            }, {
-                label: 'speed',
-                property: 'speed',
-                min: -2,
-                max: 2
-            }
-
-        ]
-        $scope.setControl = function(property, color, axis, min, max) {
-            if (color === "magenta") {
-                magenta.addControl(axis, property, min, max)
-            } else {
-                yellow.addControl(axis, property, min, max)
-            }
-        }
-
-        var render = function(state) {
-            if (state.frequency) {
-                osc.frequency.value = state.frequency;
-            }
-            if (state.volume) {
-                synth.volume.value = state.volume;
-            }
-            if (state.detune) {
-                player.detune = state.detune;
-            }
-            if (state.playbackRate) {
-                player.playbackRate = state.playbackRate;
-            }
-            if (state.drift) {
-                player.drift = state.drift;
-            }
-            if (state.setNote) {
-                console.log(Math.round(state.setNote));
-                var note = synthNotes[Math.round(state.setNote)];
-                if (note !== lastSynthNote) {
-                    synth.triggerAttack(note);
-                }
-                lastSynthNote = note;
-            }
-        }
-
-        var s = function(p) {
-            p.setup = function() {
-                p.createCanvas(p.windowWidth, p.windowHeight);
-                p.noStroke();
-                // p.noLoop();
-            }
-            var speed = 0
-            p.draw = function() {
-              if (!state.levels >= 1) state.levels = 1;
-              if (!state.speed >= 1) state.speed = 1;
-              speed++
-              speed = speed * state.speed/3;
-              p.background(state.levels, state.levels+40, state.levels+150)
-              speed += p.random(-10,10)
-
-              p.drawCircle(p.width / 2, speed*1.5, state.levels);
-            }
-
-            p.drawCircle = function(x, radius, level) {
-                var tt = 126 * level / 4.0;
-                p.fill(tt, tt+state.levels, tt-200);
-                p.ellipse(x, p.height / 2, radius * 2, radius * 2);
-                if (level > 1) {
-                    level = level - 1;
-                    p.drawCircle(x - radius / 2, radius / 2, level);
-                    p.drawCircle(x + radius / 2, radius / 2, level);
-                }
-            }
-        }
-        var myp5 = new p5(s, "myContainer");
-
+      }
     });
+
+    var socket = Socket;
+    socket.on('connect', function (){
+      console.log('I have made a persistent tw-way connection to teh server.');
+    });
+
+    // var throttled = _.throttle(render, 1000)
+    socket.on('state', function(ztate){
+      Object.assign(state,ztate);
+      stateFactory.setState(state);
+      render(state);
+      // throttled(state)
+    })
+
+    socket.on('newPresetAudio', function(audio){
+      console.log('audio', audio);
+      if(audioPreset){
+        audioPreset.off();
+      }
+      audioPreset = presetMap[audio];
+      console.log(audioPreset);
+      audioPreset.setup();
+      audioPreset.on();
+      $scope.audioControls = audioPreset.controls;
+    });
+
+    socket.on('newPresetVideo', function(video){
+      console.log('video', video);
+      $scope.$digest();
+      videoPreset = presetMap[video];
+      $scope.mySketch = videoPreset;
+      $scope.videoControls = videoControlFactory.getVideoControl();
+    });
+
+    // tracking.ColorTracker.registerColor('yellow', function(r, g, b) {
+    //   if (r > 225 && g > 125 && b < 70) {
+    //     return true;
+    //   }
+    //   return false;
+    // });
+
+    var colors = new tracking.ColorTracker(['magenta', 'yellow']);
+    colors.minDimension = 10;
+
+    //CREATING INPUT OBJECT TO SEND TO RENDER
+    var magenta = new inputFactory.Input('magenta',0,300);
+    var yellow = new inputFactory.Input('yellow',0,300)
+    $scope.magenta = magenta;
+    $scope.yellow = yellow;
+    //ASSIGNING LISTENERS FROM COLOR TRACK
+    colors.on('track', function(event) {
+      context.clearRect(0, 0, canvas.width, canvas.height);
+      if (event.data.length === 0) {
+        // No colors were detected in this frame.
+      } else {
+        event.data.forEach(function(rect) {
+          if(rect.color === 'magenta'){
+            magenta.setValue('x', rect.x);
+            magenta.setValue('y', rect.y);
+            magenta.setValue('z', rect.width);
+          }
+          if(rect.color === 'yellow'){
+            yellow.setValue('x', rect.x);
+            yellow.setValue('y', rect.y);
+            yellow.setValue('z', rect.width);
+
+          }
+
+          context.strokeStyle = rect.color;
+          context.strokeRect(rect.x, rect.y, rect.width, rect.height);
+          // context.font = '11px Helvetica';
+          // context.fillStyle = "#fff";
+          socket.emit('input', Object.assign({},magenta.getProperties(),yellow.getProperties()));
+        });
+      }
+    });
+
+    // PUTTING QUERY ON aliVideo
+    var video = document.querySelector("#homeVideo");
+    var canvas = document.getElementById('canvas');
+    var context = canvas.getContext('2d');
+
+    // aliVideo
+    tracking.track('#homeVideo', colors);
+
+    if (navigator.getUserMedia) {
+            navigator.getUserMedia({video: true}, handleVideo, function(){});
+        }
+
+    function handleVideo(stream) {
+        video.src = window.URL.createObjectURL(stream);
+    }
+    $scope.clearControls = function(){
+      yellow.clearControls();
+      magenta.clearControls();
+    }
+    $scope.buttonPressedVideo = false;
+    $scope.buttonPressedAudio = false;
+    $scope.currentSetButton = null;
+    // $scope.colorActive = 0;
+    // $scope.axisActive = 0;
+    $scope.buttonOptions = {
+      color: ["magenta","yellow"][$scope.colorActive],
+      axis:  ["x","y","z"][$scope.axisActive]
+    }
+    $scope.showOptions = function(control){
+      $scope.currentSetButton = control;
+    }
+    $scope.setControl = function(property, color, axis, min, max){
+      if(color === "magenta"){
+        magenta.addControl(axis, property, min, max)
+        console.log("magenta", magenta)
+      } else{
+        yellow.addControl(axis, property, min, max)
+        console.log("yellow", yellow )
+      }
+    }
+
+    var render = function(state){
+      if(audioPreset){
+        audioPreset.render(state);
+      }
+    }
+
+  });
 });

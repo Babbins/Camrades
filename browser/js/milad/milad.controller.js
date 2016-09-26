@@ -1,7 +1,6 @@
 app.controller("MiladControl", function($scope, inputFactory){
   $(function(){
 
-
     //Making video mirrored
     $("#myVideo").css({
         "transform": "rotateY(180deg)",
