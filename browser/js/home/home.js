@@ -58,7 +58,6 @@ app.controller('HomeCtrl', function($scope, stateFactory,videoControlFactory, pl
 
     socket.on('newPresetAudio', function(audio){
       console.log('audio', audio);
-      // $scope.$digest();
       if(audioPreset){
         audioPreset.off();
       }
@@ -70,6 +69,7 @@ app.controller('HomeCtrl', function($scope, stateFactory,videoControlFactory, pl
 
     socket.on('newPresetVideo', function(video){
       console.log('video', video);
+      $scope.$digest();
       videoPreset = presetMap[video];
       $scope.mySketch = videoPreset;
       $scope.videoControls = videoControlFactory.getVideoControl();
@@ -83,7 +83,7 @@ app.controller('HomeCtrl', function($scope, stateFactory,videoControlFactory, pl
     // });
 
     var colors = new tracking.ColorTracker(['magenta', 'yellow']);
-    colors.minDimension = 35;
+    colors.minDimension = 10;
 
     //CREATING INPUT OBJECT TO SEND TO RENDER
     var magenta = new inputFactory.Input('magenta',0,300);

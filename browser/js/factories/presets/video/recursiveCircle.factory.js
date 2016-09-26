@@ -10,18 +10,18 @@ app.factory('recursiveCircle', function(stateFactory, videoControlFactory){
     {
         label: 'speed',
         property: 'speed',
-        min: -2,
-        max: 2
+        min: -10,
+        max: 10
     }
   ]
   return function(sketch){
-    console.log("THIS IS FUCKING CALLED PLEASE")
       sketch.setup = function() {
         videoControlFactory.setVideoControl(controls);
         sketch.createCanvas(sketch.windowWidth, sketch.windowHeight);
       }
       var speed = 0
       sketch.draw = function() {
+        console.log("GETTING STATE",stateFactory.getState())
         if (!stateFactory.getState().levels >= 1) stateFactory.getState().levels = 1;
         if (!stateFactory.getState().speed >= 1) stateFactory.getState().speed = 1;
         speed++
@@ -43,4 +43,4 @@ app.factory('recursiveCircle', function(stateFactory, videoControlFactory){
           }
       }
     }
-})
+});

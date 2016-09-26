@@ -8,4 +8,4 @@ app.factory('videoControlFactory', function(){
       videoControl = newVideoControl;
     }
   }
-})
+});
