@@ -8,12 +8,13 @@ app.config(function ($stateProvider) {
 
 
 // app.controller('HomeCtrl', function($scope, , stateFactory, playAlong, inputFactory, Socket, $rootScope){
-app.controller('HomeCtrl', function($scope, stateFactory,videoControlFactory, grainPlayer, playAlong, inputFactory, Socket, $rootScope){
+app.controller('HomeCtrl', function($scope, stateFactory,videoControlFactory, arpeg, grainPlayer, playAlong, inputFactory, Socket, $rootScope){
 
   var audioPreset, videoPreset;
   var presetMap = {
     1: playAlong,
     2: grainPlayer,
+    3: arpeg,
     6: "recursiveCircle",
     7: "davidFaces",
     8: "stringCheese",
