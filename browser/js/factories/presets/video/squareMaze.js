@@ -4,19 +4,19 @@ app.factory('squareMaze', function(videoControlFactory, stateFactory){
         label: "x",
         property: "x",
         min: 0,
-        max: 500
+        max: 2000
       },
       {
         label: "y",
         property: "y",
         min: 0,
-        max: 500
+        max: 2000
       },
       {
         label: "square",
         property: "square",
         min: 0,
-        max: 500
+        max: 1000
       },
     ]
     return function(sketch){
@@ -32,7 +32,7 @@ app.factory('squareMaze', function(videoControlFactory, stateFactory){
         var z =stateFactory.getState().z || 1
             sketch.background(square,square+100,square+31,square/2-10);
             sketch.fill(square,square+1,square+3,square+7)
-            sketch.rotate(1)
+            sketch.rotate(square);
             pMaker(y/2)
             pMaker(z/2)
             pMaker(square/2)
@@ -40,7 +40,7 @@ app.factory('squareMaze', function(videoControlFactory, stateFactory){
             function pMaker(num){
               var array = [];
               for (var i = 0; i < 4; i++){
-                array.push(sketch.rect(y+num, z+num, square+num, y+num));
+                array.push(sketch.rect(num, num, square+num, num));
               }
               return array
             }

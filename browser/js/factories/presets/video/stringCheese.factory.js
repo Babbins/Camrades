@@ -44,10 +44,10 @@ app.factory('stringCheese', function(videoControlFactory, stateFactory){
       console.log("IN STRING CHEESE")
       videoControlFactory.setVideoControl(controls);
       sketch.createCanvas(sketch.windowWidth, sketch.windowHeight);
-
-      sketch.strokeWeight(9);
-      sketch.stroke(255, 100);
       sketch.background(0);
+      sketch.strokeWeight(300);
+      sketch.stroke(255, 100);
+
     }
 
     sketch.draw = function() {
@@ -56,7 +56,7 @@ app.factory('stringCheese', function(videoControlFactory, stateFactory){
         var posY = stateFactory.getState().positionY || sketch.height/2
         var resize = stateFactory.getState().resize || 1
         var rotate = stateFactory.getState().rotate || 1
-        sketch.background(0,resize,rotate,65);
+        sketch.background(posX,resize,rotate,23);
         for (var x = 0;x < sketch.random(1,70); x++){
             sketch.scale(resize);
             sketch.rotate(rotate);
