@@ -1,3 +1,0 @@
-app.factory('VideoFactory', function(){
-
-});
