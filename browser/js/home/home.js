@@ -7,26 +7,14 @@ app.config(function ($stateProvider) {
 });
 
 
-app.controller('HomeCtrl', function($scope, davidFaces, recursiveCircle, playAlong, inputFactory, Socket, $rootScope){
-  // eslint-disable-next-line no-new
-  new p5();
-
-  function setup(){
-    console.log("i'm in setup")
-    var myCanvas = createCanvas(windowWidth, windowHeight);
-    myCanvas.parent('myContainer');
-  }
-  function draw(){
-    fill(100);
-    rect(50,50,50,50)
-
-  }
+// app.controller('HomeCtrl', function($scope, , stateFactory, playAlong, inputFactory, Socket, $rootScope){
+app.controller('HomeCtrl', function($scope, stateFactory,videoControlFactory, playAlong, inputFactory, Socket, $rootScope){
 
   var audioPreset, videoPreset;
   var presetMap = {
     1: playAlong,
-    6: recursiveCircle,
-    7: davidFaces
+    6: "recursiveCircle",
+    7: "davidFaces"
   }
   var state = {};
   $scope.state = state
@@ -63,12 +51,14 @@ app.controller('HomeCtrl', function($scope, davidFaces, recursiveCircle, playAlo
     // var throttled = _.throttle(render, 1000)
     socket.on('state', function(ztate){
       Object.assign(state,ztate);
+      stateFactory.setState(state);
       render(state);
       // throttled(state)
     })
 
     socket.on('newPresetAudio', function(audio){
       console.log('audio', audio);
+      // $scope.$digest();
       if(audioPreset){
         audioPreset.off();
       }
@@ -81,9 +71,8 @@ app.controller('HomeCtrl', function($scope, davidFaces, recursiveCircle, playAlo
     socket.on('newPresetVideo', function(video){
       console.log('video', video);
       videoPreset = presetMap[video];
-      videoPreset.on(state);
-      $scope.videoControls = videoPreset.controls;
-
+      $scope.mySketch = videoPreset;
+      $scope.videoControls = videoControlFactory.getVideoControl();
     });
 
     // tracking.ColorTracker.registerColor('yellow', function(r, g, b) {
@@ -175,9 +164,6 @@ app.controller('HomeCtrl', function($scope, davidFaces, recursiveCircle, playAlo
         audioPreset.render(state);
       }
     }
-
-
-
 
   });
 });

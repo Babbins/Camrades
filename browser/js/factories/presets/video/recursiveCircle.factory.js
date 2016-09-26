@@ -1,6 +1,4 @@
-app.factory('recursiveCircle', function(){
-
-
+app.factory('recursiveCircle', function(stateFactory, videoControlFactory){
   var controls = [
     {
         label: 'levels',
@@ -8,49 +6,41 @@ app.factory('recursiveCircle', function(){
         min: 0,
         max: 10
 
-    }, {
+    },
+    {
         label: 'speed',
         property: 'speed',
         min: -2,
         max: 2
     }
   ]
-
-  return {
-    on: function(state){
-      function setup () {
-        var myCanvas = createCanvas(windowWidth, windowHeight);
-        myCanvas.parent('myContainer');
+  return function(sketch){
+    console.log("THIS IS FUCKING CALLED PLEASE")
+      sketch.setup = function() {
+        videoControlFactory.setVideoControl(controls);
+        sketch.createCanvas(sketch.windowWidth, sketch.windowHeight);
       }
       var speed = 0
-      function draw () {
-        console.log("DRAW IS GETTING CALLED")
-        if (!state.levels >= 1) state.levels = 1;
-        if (!state.speed >= 1) state.speed = 1;
+      sketch.draw = function() {
+        if (!stateFactory.getState().levels >= 1) stateFactory.getState().levels = 1;
+        if (!stateFactory.getState().speed >= 1) stateFactory.getState().speed = 1;
         speed++
-        speed = speed * state.speed/3;
-        background(state.levels, state.levels+40, state.levels+150)
-        speed += random(-10,10)
+        speed = speed * stateFactory.getState().speed/3;
+        sketch.background(stateFactory.getState().levels, stateFactory.getState().levels+40, stateFactory.getState().levels+150)
+        speed += sketch.random(-10,10)
 
-        drawCircle(p.width / 2, speed*1.5, state.levels);
+        drawCircle(sketch.width / 2, speed*1.5, stateFactory.getState().levels);
       }
 
       function drawCircle(x, radius, level) {
           var tt = 126 * level / 4.0;
-          fill(tt, tt+state.levels, tt-200);
-          ellipse(x, height / 2, radius * 2, radius * 2);
+          sketch.fill(tt, tt+stateFactory.getState().levels, tt-200);
+          sketch.ellipse(x, sketch.height / 2, radius * 2, radius * 2);
           if (level > 1) {
               level = level - 1;
               drawCircle(x - radius / 2, radius / 2, level);
               drawCircle(x + radius / 2, radius / 2, level);
           }
       }
-
-    },
-    controls: controls
-
-
-
-  }
-
+    }
 })
