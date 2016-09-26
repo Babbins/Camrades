@@ -30,7 +30,7 @@
     </div>
 
       <!--SET THE SELECTED PARAM  -->
-      <div ng-if="currentSetButton">
+      <div ng-if="buttonPressedAudio || buttonPressedVideo">
         <div style="margin-left:auto; margin-right:auto; background-color:yellow">
           <h3>{{currentSetButton.label}}</h3>
           <div class="btn-group pull-left" >
@@ -48,53 +48,54 @@
             </button>
           </div>
         </div>
-      </div>
-      <button class="btn-danger" ng-click="clearControls()"> Clear Controls</button>
-      <!--INFORMATION SECTION  -->
-      <div style="color:white;background-color:blue">
-        Magenta
-        <p>
-          x-axis:
-          <span ng-repeat= 'control in magenta.x.controls'>
-            {{control.property}}
-          </span>
-        </p>
-        <p>
-          y-axis:
-          <span ng-repeat= 'control in magenta.y.controls'>
-            {{control.property}}
-          </span>
-        </p>
-        <p>
-          z-axis:
-          <span ng-repeat= 'control in magenta.z.controls'>
-            {{control.property}}
-          </span>
-        </p>
-      </div>
-      <div>
-      <div style="color:white;background-color:blue">
-          Yellow
+        <button class="btn-danger" ng-click="clearControls()"> Clear Controls</button>
+        <!--INFORMATION SECTION  -->
+        <div style="color:white;background-color:blue">
+          Magenta
           <p>
             x-axis:
-
-            <span ng-repeat= 'control in yellow.x.controls'>
+            <span ng-repeat= 'control in magenta.x.controls'>
               {{control.property}}
-
             </span>
           </p>
           <p>
             y-axis:
-            <span ng-repeat= 'control in yellow.y.controls'>
+            <span ng-repeat= 'control in magenta.y.controls'>
               {{control.property}}
             </span>
           </p>
           <p>
             z-axis:
-            <span ng-repeat= 'control in yellow.z.controls'>
+            <span ng-repeat= 'control in magenta.z.controls'>
               {{control.property}}
             </span>
           </p>
         </div>
+        <div>
+        <div style="color:white;background-color:blue">
+            Yellow
+            <p>
+              x-axis:
+
+              <span ng-repeat= 'control in yellow.x.controls'>
+                {{control.property}}
+
+              </span>
+            </p>
+            <p>
+              y-axis:
+              <span ng-repeat= 'control in yellow.y.controls'>
+                {{control.property}}
+              </span>
+            </p>
+            <p>
+              z-axis:
+              <span ng-repeat= 'control in yellow.z.controls'>
+                {{control.property}}
+              </span>
+            </p>
+          </div>
+        </div>
       </div>
+
   </div>

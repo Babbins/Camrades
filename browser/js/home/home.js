@@ -16,8 +16,11 @@ app.controller('HomeCtrl', function($scope, stateFactory,videoControlFactory, ar
     2: grainPlayer,
     3: arpeg,
     4: theremin,
-    6: "recursiveCircle",
-    7: "davidFaces"
+    6: "squareMaze",
+    7: "recursiveCircle",
+    8: "particleFactory",
+    9: "stringCheese",
+    0: "davidFaces"
   }
   var state = {};
   $scope.state = state
