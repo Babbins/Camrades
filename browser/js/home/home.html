@@ -4,18 +4,32 @@
 <div id="myContainer" style="position:fixed; top:0; bottom:0;left:0;right:0"></div>
 
   <div style="position:fixed;top:0;left:0">
-
-  <div>
     <div>
-      <button style="background-color:grey;border:none" ng-click="buttonPressed=!buttonPressed" type="button" class="btn btn-default btn-lg">
-        <span class="glyphicon glyphicon-option-vertical" aria-hidden="true"></span>
-      </button>
+      <div>
+        <button style="background-color:grey;border:none" ng-click="buttonPressedAudio=!buttonPressedAudio" type="button" class="btn btn-default btn-lg">
+          <span class="glyphicon glyphicon-headphones" aria-hidden="true"></span>
+        </button>
+      </div>
     </div>
-  </div>
-    <div ng-hide="buttonPressed===false"  class="options" >
-      <div ng-repeat="control in controls">
+    <div ng-hide="buttonPressedAudio===false"  class="options" >
+      <div ng-repeat="control in audioControls">
         <button class="btn btn-success" style="width:200px;padding:5px; margin:5px;" ng-click="showOptions(control)">{{control.label}}</button>
       </div>
+    </div>
+    <div>
+      <div>
+        <button style="background-color:grey;border:none" ng-click="buttonPressedVideo=!buttonPressedVideo" type="button" class="btn btn-default btn-lg">
+          <span class="glyphicon glyphicon-picture" aria-hidden="true"></span>
+        </button>
+      </div>
+    </div>
+    <div ng-hide="buttonPressedVideo===false"  class="options" >
+      <div ng-repeat="control in videoControls">
+        <button class="btn btn-success" style="width:200px;padding:5px; margin:5px;" ng-click="showOptions(control)">{{control.label}}</button>
+      </div>
+    </div>
+
+      <!--SET THE SELECTED PARAM  -->
       <div ng-if="currentSetButton">
         <div style="margin-left:auto; margin-right:auto; background-color:yellow">
           <h3>{{currentSetButton.label}}</h3>
@@ -36,7 +50,8 @@
         </div>
       </div>
       <button class="btn-danger" ng-click="clearControls()"> Clear Controls</button>
-      <div>
+      <!--INFORMATION SECTION  -->
+      <div style="color:white;background-color:blue">
         Magenta
         <p>
           x-axis:
@@ -58,12 +73,14 @@
         </p>
       </div>
       <div>
-        <div>
+      <div style="color:white;background-color:blue">
           Yellow
           <p>
             x-axis:
+
             <span ng-repeat= 'control in yellow.x.controls'>
               {{control.property}}
+
             </span>
           </p>
           <p>
@@ -79,5 +96,5 @@
             </span>
           </p>
         </div>
-    </div>
+      </div>
   </div>

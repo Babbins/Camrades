@@ -28,17 +28,15 @@ module.exports = function (server) {
         console.log('Client ID: ' + socket.id + ' has disconnected');
       })
 
-      socket.on('presetChange', function(keyCode){
-        //Audio preset switch
-        if(keyCode < 54 && keyCode > 48){
-          presets.audio = KEYCODES[keyCode];
-        }
-        //Else Video preset switch
-        else{
-          presets.video = KEYCODES[keyCode];
-        }
-        io.emit('newPreset', presets);
-        console.log(presets);
+      socket.on('presetAudio', function(keyCode){
+        presets.audio = KEYCODES[keyCode];
+        io.emit('newPresetAudio', presets.audio);
+        console.log(presets.audio);
+      });
+      socket.on('presetVideo', function(keyCode){
+        presets.video = KEYCODES[keyCode];
+        io.emit('newPresetVideo', presets.video);
+        console.log(presets.video);
       });
 
       socket.on('input', function(state){

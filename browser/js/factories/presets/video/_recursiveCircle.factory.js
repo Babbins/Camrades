@@ -21,7 +21,7 @@ app.factory('recursiveCircle', function(){
       function setup () {
         var myCanvas = createCanvas(windowWidth, windowHeight);
         myCanvas.parent('myContainer');
-      }
+      } 
       var speed = 0
       function draw () {
         console.log("DRAW IS GETTING CALLED")

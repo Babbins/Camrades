@@ -7,12 +7,29 @@ app.config(function ($stateProvider) {
 });
 
 
-app.controller('HomeCtrl', function($scope, playAlong, inputFactory, AudioFactory, Socket, $rootScope){
+app.controller('HomeCtrl', function($scope, davidFaces, recursiveCircle, playAlong, inputFactory, Socket, $rootScope){
+  // eslint-disable-next-line no-new
+  new p5();
+
+  function setup(){
+    console.log("i'm in setup")
+    var myCanvas = createCanvas(windowWidth, windowHeight);
+    myCanvas.parent('myContainer');
+  }
+  function draw(){
+    fill(100);
+    rect(50,50,50,50)
+
+  }
+
   var audioPreset, videoPreset;
   var presetMap = {
-    1: playAlong
+    1: playAlong,
+    6: recursiveCircle,
+    7: davidFaces
   }
-  var state = {audio: 1};
+  var state = {};
+  $scope.state = state
   $(function(){
     $("#homeVideo").css({
         "transform": "rotateY(180deg)",
@@ -27,9 +44,14 @@ app.controller('HomeCtrl', function($scope, playAlong, inputFactory, AudioFactor
         "top":"0"
     })
     $('body').keydown(function(event){
-      if(event.which > 47 && event.which < 59){
-        socket.emit('presetChange', event.which);
+      if(event.which > 47 && event.which < 58){
         $scope.clearControls();
+        if(event.which < 54 && event.which > 48){
+          socket.emit('presetAudio', event.which);
+        }
+        else{
+          socket.emit('presetVideo', event.which);
+        }
       }
     });
 
@@ -45,18 +67,24 @@ app.controller('HomeCtrl', function($scope, playAlong, inputFactory, AudioFactor
       // throttled(state)
     })
 
-    socket.on('newPreset', function(presets){
-      console.log('presets', presets);
+    socket.on('newPresetAudio', function(audio){
+      console.log('audio', audio);
       if(audioPreset){
         audioPreset.off();
       }
-      audioPreset = presetMap[presets.audio];
+      audioPreset = presetMap[audio];
       audioPreset.setup();
       audioPreset.on();
-      $scope.controls = audioPreset.controls;
-      //same for video
+      $scope.audioControls = audioPreset.controls;
     });
 
+    socket.on('newPresetVideo', function(video){
+      console.log('video', video);
+      videoPreset = presetMap[video];
+      videoPreset.on(state);
+      $scope.videoControls = videoPreset.controls;
+
+    });
 
     // tracking.ColorTracker.registerColor('yellow', function(r, g, b) {
     //   if (r > 225 && g > 125 && b < 70) {
@@ -71,6 +99,8 @@ app.controller('HomeCtrl', function($scope, playAlong, inputFactory, AudioFactor
     //CREATING INPUT OBJECT TO SEND TO RENDER
     var magenta = new inputFactory.Input('magenta',0,300);
     var yellow = new inputFactory.Input('yellow',0,300)
+    $scope.magenta = magenta;
+    $scope.yellow = yellow;
     //ASSIGNING LISTENERS FROM COLOR TRACK
     colors.on('track', function(event) {
       context.clearRect(0, 0, canvas.width, canvas.height);
@@ -103,6 +133,7 @@ app.controller('HomeCtrl', function($scope, playAlong, inputFactory, AudioFactor
     var video = document.querySelector("#homeVideo");
     var canvas = document.getElementById('canvas');
     var context = canvas.getContext('2d');
+
     // aliVideo
     tracking.track('#homeVideo', colors);
 
@@ -117,12 +148,11 @@ app.controller('HomeCtrl', function($scope, playAlong, inputFactory, AudioFactor
       yellow.clearControls();
       magenta.clearControls();
     }
-    $scope.magenta = magenta;
-    $scope.yellow = yellow;
-    $scope.buttonPressed = false;
+    $scope.buttonPressedVideo = false;
+    $scope.buttonPressedAudio = false;
     $scope.currentSetButton = null;
-    $scope.colorActive = 0;
-    $scope.axisActive = 0;
+    // $scope.colorActive = 0;
+    // $scope.axisActive = 0;
     $scope.buttonOptions = {
       color: ["magenta","yellow"][$scope.colorActive],
       axis:  ["x","y","z"][$scope.axisActive]
@@ -133,8 +163,10 @@ app.controller('HomeCtrl', function($scope, playAlong, inputFactory, AudioFactor
     $scope.setControl = function(property, color, axis, min, max){
       if(color === "magenta"){
         magenta.addControl(axis, property, min, max)
+        console.log("magenta", magenta)
       } else{
         yellow.addControl(axis, property, min, max)
+        console.log("yellow", yellow )
       }
     }
 
@@ -143,6 +175,9 @@ app.controller('HomeCtrl', function($scope, playAlong, inputFactory, AudioFactor
         audioPreset.render(state);
       }
     }
+
+
+
 
   });
 });
