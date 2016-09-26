@@ -7,7 +7,7 @@ app.config(function ($stateProvider) {
 });
 
 
-app.controller('HomeCtrl', function($scope, davidFaces, recursiveCircle, playAlong, inputFactory, Socket, $rootScope){
+app.controller('HomeCtrl', function($scope, davidFaces, recursiveCircle, playAlong, grainPlayer, inputFactory, Socket, $rootScope){
   // eslint-disable-next-line no-new
   new p5();
 
@@ -25,6 +25,7 @@ app.controller('HomeCtrl', function($scope, davidFaces, recursiveCircle, playAlo
   var audioPreset, videoPreset;
   var presetMap = {
     1: playAlong,
+    2: grainPlayer,
     6: recursiveCircle,
     7: davidFaces
   }
@@ -73,6 +74,7 @@ app.controller('HomeCtrl', function($scope, davidFaces, recursiveCircle, playAlo
         audioPreset.off();
       }
       audioPreset = presetMap[audio];
+      console.log(audioPreset);
       audioPreset.setup();
       audioPreset.on();
       $scope.audioControls = audioPreset.controls;
@@ -94,7 +96,7 @@ app.controller('HomeCtrl', function($scope, davidFaces, recursiveCircle, playAlo
     // });
 
     var colors = new tracking.ColorTracker(['magenta', 'yellow']);
-    colors.minDimension = 35;
+    colors.minDimension = 10;
 
     //CREATING INPUT OBJECT TO SEND TO RENDER
     var magenta = new inputFactory.Input('magenta',0,300);

@@ -5,64 +5,26 @@ app.factory('playAlong', function(){
   lastSynthNote;
   return {
     setup: function(){
-      synth = new Tone.DuoSynth({
-        'vibratoAmount': 0.5,
-        'vibratoRate': 5,
-        'portamento': 0.1,
-        'harmonicity': 1.005,
-        'volume': 5,
-        'voice0': {
-          'volume': -2,
-          'oscillator': {'type': 'sawtooth'},
-          'filter': {
-            'Q': 1,
-            'type': 'lowpass',
-            'rolloff': -24
-          },
-          'envelope': {
-            'attack': 0.1,
-            'decay': 0.25,
-            'sustain': 0.4,
-            'release': 1.2
-          },
-          'filterEnvelope': {
-            'attack': 0.1,
-            'decay': 0.05,
-            'sustain': 0.3,
-            'release': 2,
-            'baseFrequency': 100,
-            'octaves': 4
-          }
+      synth = new Tone.Synth({
+        "oscillator": {
+            "type": "fatsine4",
+            "spread" : 60,
+            "count" : 10
         },
-        'voice1': {
-          'volume': -5,
-          'oscillator': {'type': 'sawtooth'},
-          'filter': {
-            'Q': 2,
-            'type': 'bandpass',
-            'rolloff': -12
-          },
-          'envelope': {
-            'attack': 0.1,
-            'decay': 0.05,
-            'sustain': 0.7,
-            'release': 0.8
-          },
-          'filterEnvelope': {
-            'attack': 0.1,
-            'decay': 0.05,
-            'sustain': 0.7,
-            'release': 2,
-            'baseFrequency': 5000,
-            'octaves': -1.5
-          }
+        "envelope": {
+            "attack": 0.4,
+            "decay": 0.01,
+            "sustain": 1,
+            "attackCurve" : "sine",
+            "releaseCurve" : "sine",
+            "release": 0.4
         }
       }).toMaster();
       player = new Tone.Player({
         url: '/signals.mp3',
         autostart: true
       }).toMaster();
-      synthNotes = ['c4','c#4','f4','g4','a#4'];
+      synthNotes = ['eb4','f4','g4','bb4','c4', 'eb5'];
       lastSynthNote = synthNotes[0];
     },
     on: function(){
