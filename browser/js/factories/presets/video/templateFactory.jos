@@ -1,0 +1,23 @@
+app.factory('templateFactory', function(videoControlFactory, stateFactory){
+  var controls = [
+    {
+      label: "",
+      property: "",
+      min:
+      max:
+    },
+  ]
+  return function(sketch){
+    sketch.setup = function() {
+      videoControlFactory.setVideoControl(controls);
+      sketch.createCanvas(sketch.windowWidth, sketch.windowHeight);
+      sketch.background(0);
+    }
+
+    sketch.draw = function() {
+      var param = stateFactory.getState().state || 0
+
+  }
+})
+
+
