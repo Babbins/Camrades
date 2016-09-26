@@ -10,8 +10,8 @@ app.factory('recursiveCircle', function(stateFactory, videoControlFactory){
     {
         label: 'speed',
         property: 'speed',
-        min: -10,
-        max: 10
+        min: -6,
+        max: 6
     }
   ]
   return function(sketch){
