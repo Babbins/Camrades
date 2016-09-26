@@ -37,10 +37,13 @@ module.exports = function (server) {
         else{
           presets.video = KEYCODES[keyCode];
         }
+        io.emit('newPreset', presets);
         console.log(presets);
-      })
+      });
+
       socket.on('input', function(state){
-        io.emit('state', Object.assign(state, presets));
+        console.log(state);
+        io.emit('state', state);
       })
 
     });

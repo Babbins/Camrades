@@ -3,9 +3,6 @@
 
 <div id="myContainer" style="position:fixed; top:0; bottom:0;left:0;right:0"></div>
 
-<button ng-click="start()"  >START</button>
-
-
   <div style="position:fixed;top:0;left:0">
 
   <div>
@@ -39,5 +36,48 @@
         </div>
       </div>
       <button class="btn-danger" ng-click="clearControls()"> Clear Controls</button>
+      <div>
+        Magenta
+        <p>
+          x-axis:
+          <span ng-repeat= 'control in magenta.x.controls'>
+            {{control.property}}
+          </span>
+        </p>
+        <p>
+          y-axis:
+          <span ng-repeat= 'control in magenta.y.controls'>
+            {{control.property}}
+          </span>
+        </p>
+        <p>
+          z-axis:
+          <span ng-repeat= 'control in magenta.z.controls'>
+            {{control.property}}
+          </span>
+        </p>
+      </div>
+      <div>
+        <div>
+          Yellow
+          <p>
+            x-axis:
+            <span ng-repeat= 'control in yellow.x.controls'>
+              {{control.property}}
+            </span>
+          </p>
+          <p>
+            y-axis:
+            <span ng-repeat= 'control in yellow.y.controls'>
+              {{control.property}}
+            </span>
+          </p>
+          <p>
+            z-axis:
+            <span ng-repeat= 'control in yellow.z.controls'>
+              {{control.property}}
+            </span>
+          </p>
+        </div>
     </div>
   </div>
