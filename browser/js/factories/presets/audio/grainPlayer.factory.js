@@ -3,7 +3,7 @@ app.factory('grainPlayer', function(){
   return {
     setup: function(){
       player = new Tone.GrainPlayer({
-        url: "./toto-africa.mp3",
+        url: "./alone.mp3",
         loop: true,
         grainSize: 0.1,
         overlap: 0.05,
