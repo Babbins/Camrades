@@ -21,7 +21,6 @@ app.factory('recursiveCircle', function(stateFactory, videoControlFactory){
       }
       var speed = 0
       sketch.draw = function() {
-        console.log("GETTING STATE",stateFactory.getState())
         if (!stateFactory.getState().levels >= 1) stateFactory.getState().levels = 1;
         if (!stateFactory.getState().speed >= 1) stateFactory.getState().speed = 1;
         speed++
