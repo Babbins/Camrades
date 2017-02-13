@@ -99,3 +99,20 @@
       </div>
 
   </div>
+
+<div class="container" style="position: fixed; bottom: 0; margin:auto">
+  <!-- <div class="row"> -->
+    <div class="col-xs-8 col-xs-offset-2">
+      <span class="option" ng-repeat="audioPreset in audioPresets">
+        <button ng-class="{'green': audioPreset.active}" ng-click="emitAudio(audioPreset.key)" type="button" class="btn btn-default btn-lg" uib-tooltip='{{audioPreset.title}}'>
+          <span aria-hidden="true"> {{audioPreset.key}}</span>
+        </button>
+      </span>
+      <span class="option" ng-repeat="videoPreset in videoPresets">
+        <button ng-class="{'green': videoPreset.active}" ng-click="emitVideo(videoPreset.key)" type="button" class="btn btn-default btn-lg" uib-tooltip='{{videoPreset.title}}'>
+          <span aria-hidden="true"> {{videoPreset.key}}</span>
+        </button>
+      </span>
+    </div>
+  </div>
+</div>

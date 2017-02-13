@@ -6,24 +6,22 @@ app.config(function ($stateProvider) {
     });
 });
 
-
-// app.controller('HomeCtrl', function($scope, , stateFactory, playAlong, inputFactory, Socket, $rootScope){
-app.controller('HomeCtrl', function($scope, stateFactory,videoControlFactory, arpeg, theremin, grainPlayer, playAlong, inputFactory, Socket, $rootScope){
-
-  var audioPreset, videoPreset;
+app.controller('HomeCtrl', function($scope, stateFactory, videoControlFactory, arpeg, theremin, grainPlayer, playAlong, inputFactory, Socket, $rootScope){
+  var audioPreset, videoPreset, activeAudio, activeVideo;
   var presetMap = {
     1: playAlong,
     2: grainPlayer,
     3: arpeg,
     4: theremin,
-    6: "squareMaze",
-    7: "recursiveCircle",
-    8: "particleFactory",
-    9: "stringCheese",
-    0: "davidFaces"
-  }
+    5: "squareMaze",
+    6: "recursiveCircle",
+    7: "particleFactory",
+    8: "stringCheese",
+    9: "davidFaces"
+  };
+
   var state = {};
-  $scope.state = state
+  $scope.state = state;
   $(function(){
     $("#homeVideo").css({
         "transform": "rotateY(180deg)",
@@ -38,25 +36,33 @@ app.controller('HomeCtrl', function($scope, stateFactory,videoControlFactory, ar
         "top":"0"
     })
     $('body').keydown(function(event){
-      if(event.which > 47 && event.which < 58){
+      var numKey = event.which - 48;
+      if (1 <= numKey && numKey <= 4 ) {
+        console.log(numKey);
         $scope.clearControls();
-        if(event.which < 54 && event.which > 48){
-          socket.emit('presetAudio', event.which);
-        }
-        else{
-          socket.emit('presetVideo', event.which);
-        }
+        socket.emit('presetAudio', numKey);
+      } else if (5 <= numKey && numKey <= 9) {
+        $scope.clearControls();
+        socket.emit('presetVideo', numKey);
       }
     });
-
+    $scope.emitVideo = function(num) {
+      console.log('ok');
+      socket.emit('presetVideo', num);
+    }
+    $scope.emitAudio = function(num) {
+      socket.emit('presetAudio', num);
+    }
+    // $scope.audioPresetClick
     var socket = Socket;
+
     socket.on('connect', function (){
-      console.log('I have made a persistent tw-way connection to teh server.');
+      console.log('I have made a persistent tw-way connection to teh server.', this.id);
     });
 
     // var throttled = _.throttle(render, 1000)
-    socket.on('state', function(ztate){
-      Object.assign(state,ztate);
+    socket.on('state', function(newState){
+      Object.assign(state, newState);
       stateFactory.setState(state);
       render(state);
       // throttled(state)
@@ -64,22 +70,60 @@ app.controller('HomeCtrl', function($scope, stateFactory,videoControlFactory, ar
 
     socket.on('newPresetAudio', function(audio){
       console.log('audio', audio);
-      if(audioPreset){
+      if (audioPreset){
         audioPreset.off();
+        console.log('activeAudio', activeAudio);
+        console.log('audioPresets', $scope.audioPresets[activeAudio]);
+        if (typeof activeAudio === 'number') {
+          $scope.audioPresets[activeAudio].active = false;
+        }
+      }
+      for (var i = 0; i < $scope.audioPresets.length; i++) {
+        if ($scope.audioPresets[i].key === audio) {
+          if(i === activeAudio){
+            activeAudio = null;
+            return $scope.$digest();
+          }
+          activeAudio = i;
+          $scope.audioPresets[i].active = true;
+          $scope.$digest();
+          break;
+        }
       }
       audioPreset = presetMap[audio];
       console.log(audioPreset);
       audioPreset.setup();
       audioPreset.on();
       $scope.audioControls = audioPreset.controls;
+      $scope.$digest();
     });
 
     socket.on('newPresetVideo', function(video){
       console.log('video', video);
-      $scope.$digest();
+      if (typeof activeVideo === 'number') {
+        console.log(activeVideo);
+        $scope.videoPresets[activeVideo].active = false;
+        $scope.mySketch = null;
+      }
+
+      for (var i = 0; i < $scope.videoPresets.length; i++) {
+        if ($scope.videoPresets[i].key === video) {
+          if(i === activeVideo){
+            activeVideo = null;
+            return $scope.$digest();
+          }
+          activeVideo = i;
+          $scope.videoPresets[i].active = true;
+          $scope.$digest();
+          console.log($scope.videoPresets[i]);
+          break;
+        }
+      }
       videoPreset = presetMap[video];
       $scope.mySketch = videoPreset;
       $scope.videoControls = videoControlFactory.getVideoControl();
+      $scope.$digest();
+      console.log('videocontrols', $scope.videoControls);
     });
 
     // tracking.ColorTracker.registerColor('yellow', function(r, g, b) {
@@ -153,9 +197,11 @@ app.controller('HomeCtrl', function($scope, stateFactory,videoControlFactory, ar
       color: ["magenta","yellow"][$scope.colorActive],
       axis:  ["x","y","z"][$scope.axisActive]
     }
+
     $scope.showOptions = function(control){
       $scope.currentSetButton = control;
-    }
+    };
+
     $scope.setControl = function(property, color, axis, min, max){
       if(color === "magenta"){
         magenta.addControl(axis, property, min, max)
@@ -164,13 +210,64 @@ app.controller('HomeCtrl', function($scope, stateFactory,videoControlFactory, ar
         yellow.addControl(axis, property, min, max)
         console.log("yellow", yellow )
       }
-    }
+    };
 
     var render = function(state){
       if(audioPreset){
         audioPreset.render(state);
       }
-    }
+    };
 
+    $scope.ali = false;
+    $scope.audioPresets = [
+      {
+        key: 1,
+        title: 'Play Along',
+        description: 'Play along with Signals by D.R.A.M'
+      },
+      {
+        key: 2,
+        title: 'Manipulate Song',
+        description: 'Speed up and detune Better Off Alone by Alice Deejay'
+      },
+      {
+        key: 3,
+        title: 'Arpeggio Chord Progression',
+        description: 'Arpeggiate through a chord progression'
+      },
+      {
+        key: 4,
+        title: 'Japanese Scale',
+        description: 'Play the notes of japanese scale'
+      }
+    ];
+    $scope.videoPresets = [
+      {
+        key: 5,
+        title: 'Squares',
+        description: 'Squares!!!!'
+      },
+      {
+        key: 6,
+        title: 'Circles',
+        description: 'Circles!!!!'
+      },
+      {
+        key: 7,
+        title: 'Raining Particles',
+        description: 'Raaaaaaiiiiinnnn!'
+      },
+      {
+        key: 8,
+        title: 'Cat Toast',
+        description: 'EL-OH-EL!'
+      },
+      {
+        key: 9,
+        title: 'Fullstack Staff',
+        description: 'We love you guys!'
+      }
+    ];
   });
+
 });

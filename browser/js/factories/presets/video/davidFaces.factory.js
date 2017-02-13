@@ -33,7 +33,7 @@ app.factory('davidFaces', function(videoControlFactory, stateFactory){
   ]
 
     return function(sketch){
-
+      console.log('sketch', sketch);
       var img = [];
       var bugs = [];
       var asc = true;

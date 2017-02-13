@@ -31,6 +31,9 @@ app.factory('theremin', function(){
     },
     on: function(){
     },
+    off: function(){
+
+    },
     controls: [
       {
         label: "Synth Note",
